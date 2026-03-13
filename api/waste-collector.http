@@ -1,0 +1,52 @@
+POST http://localhost:3000/waste-collectors
+Content-Type: application/json
+
+{
+  "email": "enterprise@gmail.com",
+  "password": "12345678",
+  "name": "Empresa de Coleta de Lixo",
+  "isEnterprise": true,
+  "materials": [
+    "Glass"
+  ],
+   "phone": {
+    "ddd": 11,
+    "ddi": 55,
+    "number": 961868673
+  },
+  "document": "58608125000189",
+  "address": {
+    "zipCode": "06449300"
+  },
+  "enterprise": {
+    "companyName": "Coleta de Lixo Ltda",
+    "commercialName": "Coleta de Lixo"
+  }
+}
+
+### POST Pessoa fisica
+
+POST http://localhost:3000/waste-collectors
+Content-Type: application/json
+
+{
+  "email": "collector@gmail.com",
+  "password": "12345678",
+  "name": "Catador",
+  "isEnterprise": false,
+  "materials": [
+    "Glass"
+  ],
+   "phone": {
+    "ddd": 11,
+    "ddi": 55,
+    "number": 961868671
+  },
+  "document": "16543092068",
+  "address": {
+    "zipCode": "06449300"
+  }
+}
+
+###
+GET http://localhost:3000/waste-collectors

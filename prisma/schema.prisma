@@ -1,0 +1,216 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model tbl_user {
+  id                  String                @id @default(uuid())
+  email               String                @unique
+  password            String
+  phone               String                @unique
+  name                String
+  tbl_generator       tbl_generator[]
+  tbl_deliveryman     tbl_deliveryman[]
+  tbl_waste_collector tbl_waste_collector[]
+}
+
+model tbl_generator {
+  id        String   @id @default(uuid())
+  document  String
+  birthDate DateTime
+  user      tbl_user @relation(fields: [user_id], references: [id])
+
+  user_id               String
+  tbl_generator_address tbl_generator_address[]
+
+  tbl_collection tbl_collection[]
+}
+
+model tbl_deliveryman {
+  id            String   @id @default(uuid())
+  licenseNumber String
+  birthDate     DateTime
+  user          tbl_user @relation(fields: [user_id], references: [id])
+
+  user_id                 String
+  tbl_vehicle_deliveryman tbl_vehicle_deliveryman[]
+
+  tbl_collection tbl_collection[]
+}
+
+model tbl_vehicle_type {
+  id          String        @id @default(uuid())
+  type        String        @unique
+  tbl_vehicle tbl_vehicle[]
+}
+
+model tbl_vehicle_brand {
+  id          String        @id @default(uuid())
+  brand       String        @unique
+  tbl_vehicle tbl_vehicle[]
+}
+
+model tbl_vehicle_model {
+  id                        String                      @id @default(uuid())
+  model                     String                      @unique
+  tbl_vehicle_vehicle_model tbl_vehicle_vehicle_model[]
+  tbl_vehicle_deliveryman   tbl_vehicle_deliveryman[]
+}
+
+model tbl_color {
+  id                      String                    @id @default(uuid())
+  color                   String                    @unique
+  tbl_vehicle_color       tbl_vehicle_color[]
+  tbl_vehicle_deliveryman tbl_vehicle_deliveryman[]
+}
+
+model tbl_vehicle {
+  id                        String                      @id @default(uuid())
+  year                      Int
+  brand                     tbl_vehicle_brand           @relation(fields: [brand_id], references: [id])
+  brand_id                  String
+  tbl_vehicle_color         tbl_vehicle_color[]
+  type                      tbl_vehicle_type            @relation(fields: [type_id], references: [id])
+  type_id                   String
+  tbl_vehicle_vehicle_model tbl_vehicle_vehicle_model[]
+  tbl_vehicle_deliveryman   tbl_vehicle_deliveryman[]
+}
+
+model tbl_vehicle_color {
+  id         String      @id @default(uuid())
+  vehicle    tbl_vehicle @relation(fields: [vehicle_id], references: [id])
+  vehicle_id String
+  color      tbl_color   @relation(fields: [color_id], references: [id])
+  color_id   String
+}
+
+model tbl_vehicle_vehicle_model {
+  id         String            @id @default(uuid())
+  vehicle    tbl_vehicle       @relation(fields: [vehicle_id], references: [id])
+  vehicle_id String
+  model      tbl_vehicle_model @relation(fields: [model_id], references: [id])
+  model_id   String
+}
+
+model tbl_vehicle_deliveryman {
+  id             String            @id @default(uuid())
+  deliveryman    tbl_deliveryman   @relation(fields: [deliveryman_id], references: [id])
+  deliveryman_id String
+  vehicle        tbl_vehicle       @relation(fields: [vehicle_id], references: [id])
+  vehicle_id     String
+  plate          String
+  model          tbl_vehicle_model @relation(fields: [model_id], references: [id])
+  model_id       String
+  color          tbl_color         @relation(fields: [color_id], references: [id])
+  color_id       String
+}
+
+model tbl_materials {
+  id                            String                          @id @default(uuid())
+  name                          String                          @unique
+  tbl_materials_waste_collector tbl_materials_waste_collector[]
+
+  tbl_collection_item tbl_collection_item[]
+}
+
+model tbl_materials_waste_collector {
+  id                 String              @id @default(uuid())
+  waste_collector    tbl_waste_collector @relation(fields: [waste_collector_id], references: [id])
+  waste_collector_id String
+  materials          tbl_materials       @relation(fields: [materials_id], references: [id])
+  materials_id       String
+}
+
+model tbl_waste_collector {
+  id           String   @id @default(uuid())
+  document     String   @unique
+  isEnterprise Boolean
+  user         tbl_user @relation(fields: [user_id], references: [id])
+
+  user_id                       String
+  tbl_enterprise                tbl_enterprise[]
+  tbl_materials_waste_collector tbl_materials_waste_collector[]
+
+  tbl_waste_collector_address tbl_waste_collector_address[]
+
+  tbl_collection tbl_collection[]
+}
+
+model tbl_address {
+  id                    String                  @id @default(uuid())
+  zipCode               String                  @unique
+  tbl_generator_address tbl_generator_address[]
+
+  tbl_waste_collector_address tbl_waste_collector_address[]
+}
+
+model tbl_waste_collector_address {
+  id              String              @id @default(uuid())
+  number          String?
+  complement      String?
+  waste_collector tbl_waste_collector @relation(fields: [waste_collector_id], references: [id])
+  address         tbl_address         @relation(fields: [address_id], references: [id])
+
+  waste_collector_id String
+  address_id         String
+}
+
+model tbl_enterprise {
+  id                 String              @id @default(uuid())
+  commercialName     String
+  companyName        String
+  wasteCollector     tbl_waste_collector @relation(fields: [waste_collector_id], references: [id])
+  waste_collector_id String
+}
+
+model tbl_generator_address {
+  id           String        @id @default(uuid())
+  number       String
+  complement   String
+  generator    tbl_generator @relation(fields: [generator_id], references: [id])
+  address      tbl_address   @relation(fields: [address_id], references: [id])
+  generator_id String
+  address_id   String
+}
+
+model tbl_collection_status {
+  id             String           @id @default(uuid())
+  status         String           @unique
+  tbl_collection tbl_collection[]
+}
+
+model tbl_collection {
+  id                 String                @id @default(uuid())
+  date               DateTime
+  waste_collector    tbl_waste_collector   @relation(fields: [waste_collector_id], references: [id])
+  waste_collector_id String
+  generator_id       String
+  generator          tbl_generator         @relation(fields: [generator_id], references: [id])
+  deliveryman_id     String?
+  deliveryman        tbl_deliveryman?      @relation(fields: [deliveryman_id], references: [id])
+  status             tbl_collection_status @relation(fields: [status_id], references: [id])
+  status_id          String
+  photo_proof        String?
+  co2_saved          Float?
+
+  tbl_collection_item tbl_collection_item[]
+}
+
+model tbl_collection_item {
+  id            String         @id @default(uuid())
+  quantity      Float
+  collection    tbl_collection @relation(fields: [collection_id], references: [id])
+  collection_id String
+  materials     tbl_materials  @relation(fields: [materials_id], references: [id])
+  materials_id  String
+}

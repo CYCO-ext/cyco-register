@@ -1,0 +1,246 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table tbl_user {
+  id String [pk]
+  email String [unique, not null]
+  password String [not null]
+  phone String [unique, not null]
+  name String [not null]
+  tbl_generator tbl_generator [not null]
+  tbl_deliveryman tbl_deliveryman [not null]
+  tbl_waste_collector tbl_waste_collector [not null]
+}
+
+Table tbl_generator {
+  id String [pk]
+  document String [not null]
+  birthDate DateTime [not null]
+  user tbl_user [not null]
+  user_id String [not null]
+  tbl_generator_address tbl_generator_address [not null]
+  tbl_collection tbl_collection [not null]
+}
+
+Table tbl_deliveryman {
+  id String [pk]
+  licenseNumber String [not null]
+  birthDate DateTime [not null]
+  user tbl_user [not null]
+  user_id String [not null]
+  tbl_vehicle_deliveryman tbl_vehicle_deliveryman [not null]
+  tbl_collection tbl_collection [not null]
+}
+
+Table tbl_vehicle_type {
+  id String [pk]
+  type String [unique, not null]
+  tbl_vehicle tbl_vehicle [not null]
+}
+
+Table tbl_vehicle_brand {
+  id String [pk]
+  brand String [unique, not null]
+  tbl_vehicle tbl_vehicle [not null]
+}
+
+Table tbl_vehicle_model {
+  id String [pk]
+  model String [unique, not null]
+  tbl_vehicle_vehicle_model tbl_vehicle_vehicle_model [not null]
+  tbl_vehicle_deliveryman tbl_vehicle_deliveryman [not null]
+}
+
+Table tbl_color {
+  id String [pk]
+  color String [unique, not null]
+  tbl_vehicle_color tbl_vehicle_color [not null]
+  tbl_vehicle_deliveryman tbl_vehicle_deliveryman [not null]
+}
+
+Table tbl_vehicle {
+  id String [pk]
+  year Int [not null]
+  brand tbl_vehicle_brand [not null]
+  brand_id String [not null]
+  tbl_vehicle_color tbl_vehicle_color [not null]
+  type tbl_vehicle_type [not null]
+  type_id String [not null]
+  tbl_vehicle_vehicle_model tbl_vehicle_vehicle_model [not null]
+  tbl_vehicle_deliveryman tbl_vehicle_deliveryman [not null]
+}
+
+Table tbl_vehicle_color {
+  id String [pk]
+  vehicle tbl_vehicle [not null]
+  vehicle_id String [not null]
+  color tbl_color [not null]
+  color_id String [not null]
+}
+
+Table tbl_vehicle_vehicle_model {
+  id String [pk]
+  vehicle tbl_vehicle [not null]
+  vehicle_id String [not null]
+  model tbl_vehicle_model [not null]
+  model_id String [not null]
+}
+
+Table tbl_vehicle_deliveryman {
+  id String [pk]
+  deliveryman tbl_deliveryman [not null]
+  deliveryman_id String [not null]
+  vehicle tbl_vehicle [not null]
+  vehicle_id String [not null]
+  plate String [not null]
+  model tbl_vehicle_model [not null]
+  model_id String [not null]
+  color tbl_color [not null]
+  color_id String [not null]
+}
+
+Table tbl_materials {
+  id String [pk]
+  name String [unique, not null]
+  tbl_materials_waste_collector tbl_materials_waste_collector [not null]
+  tbl_collection_item tbl_collection_item [not null]
+}
+
+Table tbl_materials_waste_collector {
+  id String [pk]
+  waste_collector tbl_waste_collector [not null]
+  waste_collector_id String [not null]
+  materials tbl_materials [not null]
+  materials_id String [not null]
+}
+
+Table tbl_waste_collector {
+  id String [pk]
+  document String [unique, not null]
+  isEnterprise Boolean [not null]
+  user tbl_user [not null]
+  user_id String [not null]
+  tbl_enterprise tbl_enterprise [not null]
+  tbl_materials_waste_collector tbl_materials_waste_collector [not null]
+  tbl_waste_collector_address tbl_waste_collector_address [not null]
+  tbl_collection tbl_collection [not null]
+}
+
+Table tbl_address {
+  id String [pk]
+  zipCode String [unique, not null]
+  tbl_generator_address tbl_generator_address [not null]
+  tbl_waste_collector_address tbl_waste_collector_address [not null]
+}
+
+Table tbl_waste_collector_address {
+  id String [pk]
+  number String
+  complement String
+  waste_collector tbl_waste_collector [not null]
+  address tbl_address [not null]
+  waste_collector_id String [not null]
+  address_id String [not null]
+}
+
+Table tbl_enterprise {
+  id String [pk]
+  commercialName String [not null]
+  companyName String [not null]
+  wasteCollector tbl_waste_collector [not null]
+  waste_collector_id String [not null]
+}
+
+Table tbl_generator_address {
+  id String [pk]
+  number String [not null]
+  complement String [not null]
+  generator tbl_generator [not null]
+  address tbl_address [not null]
+  generator_id String [not null]
+  address_id String [not null]
+}
+
+Table tbl_collection_status {
+  id String [pk]
+  status String [unique, not null]
+  tbl_collection tbl_collection [not null]
+}
+
+Table tbl_collection {
+  id String [pk]
+  date DateTime [not null]
+  waste_collector tbl_waste_collector [not null]
+  waste_collector_id String [not null]
+  generator_id String [not null]
+  generator tbl_generator [not null]
+  deliveryman_id String
+  deliveryman tbl_deliveryman
+  status tbl_collection_status [not null]
+  status_id String [not null]
+  photo_proof String
+  co2_saved Float
+  tbl_collection_item tbl_collection_item [not null]
+}
+
+Table tbl_collection_item {
+  id String [pk]
+  quantity Float [not null]
+  collection tbl_collection [not null]
+  collection_id String [not null]
+  materials tbl_materials [not null]
+  materials_id String [not null]
+}
+
+Ref: tbl_generator.user_id > tbl_user.id
+
+Ref: tbl_deliveryman.user_id > tbl_user.id
+
+Ref: tbl_vehicle.brand_id > tbl_vehicle_brand.id
+
+Ref: tbl_vehicle.type_id > tbl_vehicle_type.id
+
+Ref: tbl_vehicle_color.vehicle_id > tbl_vehicle.id
+
+Ref: tbl_vehicle_color.color_id > tbl_color.id
+
+Ref: tbl_vehicle_vehicle_model.vehicle_id > tbl_vehicle.id
+
+Ref: tbl_vehicle_vehicle_model.model_id > tbl_vehicle_model.id
+
+Ref: tbl_vehicle_deliveryman.deliveryman_id > tbl_deliveryman.id
+
+Ref: tbl_vehicle_deliveryman.vehicle_id > tbl_vehicle.id
+
+Ref: tbl_vehicle_deliveryman.model_id > tbl_vehicle_model.id
+
+Ref: tbl_vehicle_deliveryman.color_id > tbl_color.id
+
+Ref: tbl_materials_waste_collector.waste_collector_id > tbl_waste_collector.id
+
+Ref: tbl_materials_waste_collector.materials_id > tbl_materials.id
+
+Ref: tbl_waste_collector.user_id > tbl_user.id
+
+Ref: tbl_waste_collector_address.waste_collector_id > tbl_waste_collector.id
+
+Ref: tbl_waste_collector_address.address_id > tbl_address.id
+
+Ref: tbl_enterprise.waste_collector_id > tbl_waste_collector.id
+
+Ref: tbl_generator_address.generator_id > tbl_generator.id
+
+Ref: tbl_generator_address.address_id > tbl_address.id
+
+Ref: tbl_collection.waste_collector_id > tbl_waste_collector.id
+
+Ref: tbl_collection.generator_id > tbl_generator.id
+
+Ref: tbl_collection.deliveryman_id > tbl_deliveryman.id
+
+Ref: tbl_collection.status_id > tbl_collection_status.id
+
+Ref: tbl_collection_item.collection_id > tbl_collection.id
+
+Ref: tbl_collection_item.materials_id > tbl_materials.id

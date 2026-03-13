@@ -1,0 +1,29 @@
+services:
+  db: 
+    image: mysql:8.0.30-debian
+    container_name: register-database
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cyco
+    ports:
+      - 3306:3306
+    volumes:
+      - ./.docker/dbdata:/var/lib/mysql
+    networks:
+      - register-network
+
+  # api:
+  #   build: .
+  #   container_name: register-service
+  #   environment:
+  #     DATABASE_URL: "mysql://root:root@register-database:3306/cyco"
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - register-network
+
+networks:
+  register-network:
+    driver: bridge

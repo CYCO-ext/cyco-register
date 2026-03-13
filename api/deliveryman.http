@@ -1,0 +1,24 @@
+POST http://localhost:3000/deliveryman
+Content-Type: application/json
+
+{
+  "email": "deliveryman1@gmail.com",
+  "password": "12345678",
+  "name": "Delivery Man 1",
+   "phone": {
+    "ddd": 11,
+    "ddi": 55,
+    "number": 961869671
+  },
+  "birthDate": "2015-03-25T00:00:00.000Z",
+  "licenseNumber": "20934682414",
+  "vehicle": {
+    "id": "3d4e440e-91a8-41c7-9479-391c2bc52e03",
+    "colorId": "be0ec369-4271-4ec8-be6a-a9d6d40c422c",
+    "modelId": "26720417-b635-44ba-bf7d-1791950a8afe",
+    "plate": "ECJ8742"
+  }
+}
+
+###
+GET http://localhost:3000/deliveryman/6ea74c42-d5b4-4122-ba15-6873194a0160
