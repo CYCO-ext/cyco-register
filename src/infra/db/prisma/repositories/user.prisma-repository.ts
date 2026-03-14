@@ -18,6 +18,22 @@ export class UserRepositoryImpl implements IUserRepository {
     return result ? this.mapOutput(result) : null;
   }
 
+  async getRoleByEmail(email: string): Promise<"WASTE_COLLECTOR" | "GENERATOR"> {
+    const result = await this.prisma.tbl_user.findUnique({
+      where: {
+        email,
+      },
+      include: {
+        tbl_generator: true,
+        tbl_waste_collector: true
+      }
+    })
+
+    if (result.tbl_generator.length > 0) return "GENERATOR"
+    if (result.tbl_waste_collector.length > 0) return "WASTE_COLLECTOR"
+    return null
+  }
+
   private mapOutput(result: TUserPrismaResult): User {
     const user = User.create({
       email: result.email,

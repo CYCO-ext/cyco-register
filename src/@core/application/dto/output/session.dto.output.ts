@@ -3,5 +3,6 @@ export type TSessionOutputDTO = {
     name: string
     email: string
   }
+  role: "WASTE_COLLECTOR" | "GENERATOR"
   token: string
 }

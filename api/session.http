@@ -2,6 +2,6 @@ POST http://localhost:3000/session
 Content-Type: application/json
 
 {
-  "email": "collector@gmail.com",
+  "email": "lidia@gmail.com",
   "password": "12345678"
 }

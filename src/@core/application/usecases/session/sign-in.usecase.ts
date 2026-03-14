@@ -33,6 +33,8 @@ export class SignInUsecase {
       id: user.getId(),
       email: user.getEmail(),
     })
-    return { user: { email: user.getEmail(), name: user.getName() }, token }
+
+    const role = await this.userRepository.getRoleByEmail(user.getEmail())
+    return { user: { email: user.getEmail(), name: user.getName() }, token, role }
   }
 }
