@@ -11,11 +11,16 @@ Content-Type: application/json
     "ddd": 11,
     "ddi": 55,
     "number": 961869684
+  },
+  "address": {
+    "zipCode": "06449301",
+    "complement": "124B",
+    "number": "930"
   }
 }
 
 ###
-GET http://localhost:3000/generator/fe875bd7-1674-4e8d-a27a-e2c03f3c814a
+GET http://localhost:3000/generator/0b086b24-f98b-410a-8ad3-84803a2254b7
 
 ###
 POST http://localhost:3000/generator/fe875bd7-1674-4e8d-a27a-e2c03f3c814a/address

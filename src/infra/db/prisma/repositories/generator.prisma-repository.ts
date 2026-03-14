@@ -76,6 +76,22 @@ export class GeneratorRepositoryImpl implements IGeneratorRepository {
             name: generator.getUser().getName()
           }
         },
+        tbl_generator_address: {
+          create: {
+            complement: generator.getAddress()[0].getComplement(),
+            number: generator.getAddress()[0].getNumber(),
+            address: {
+              connectOrCreate: {
+                where: {
+                  zipCode: generator.getAddress()[0].getZipCode()
+                },
+                create: {
+                  zipCode: generator.getAddress()[0].getZipCode()
+                }
+              }
+            }
+          }
+        },
         birthDate: generator.getBirthDate(),
         document: generator.getDocument()
       },

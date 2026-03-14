@@ -16,7 +16,7 @@ export const wasteCollectorSchema = yup.object().shape({
   enterprise: yup.object().when('isEnterprise', {
     is: true,
     then: yup.object().shape({
-      commercialName: yup.string().required(),
+      // commercialName: yup.string().required(),
       companyName: yup.string().required()
     }).required(),
     otherwise: yup.object().nullable().notRequired()

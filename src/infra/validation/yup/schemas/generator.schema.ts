@@ -7,9 +7,14 @@ export const generatorSchema: yup.SchemaOf<TGeneratorInputDTO> = yup.object().sh
   name: yup.string().required(),
   birthDate: yup.date().required(),
   document: yup.string().required(),
+  address: yup.object().shape({
+    zipCode: yup.string().required(),
+    number: yup.string().required(),
+    complement: yup.string()
+  }).required(),
   phone: yup.object().shape({
-    ddd: yup.string(),
-    ddi: yup.string(),
-    number: yup.string()
+    ddd: yup.string().required(),
+    ddi: yup.string().required(),
+    number: yup.string().required()
   }).required()
 })
