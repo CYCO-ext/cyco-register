@@ -1,14 +1,15 @@
 services:
   db: 
-    image: mysql:8.0.30-debian
+    image: postgres:16
     container_name: register-database
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: cyco
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: cyco
     ports:
-      - 3306:3306
+      - 5432:5432
     volumes:
-      - ./.docker/dbdata:/var/lib/mysql
+      - ./.docker/dbdata:/var/lib/postgresql/data
     networks:
       - register-network
 
