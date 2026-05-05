@@ -13,6 +13,8 @@ import { wasteCollectorSchema } from '../../infra/validation/yup/schemas/waste-c
 import { FindAllWasteCollectorsUsecase } from '../../@core/application/usecases/waste-collector/find-all-waste-collectors.usecase';
 import { MaterialRepositoryImpl } from '../../infra/db/prisma/repositories/material.prisma-repository';
 import { IMaterialRepository } from '../../@core/domain/repositories/material.repository';
+import { KafkaProducerImpl } from '../../infra/kafka/kafka-producer.service';
+import { IEventProducer } from '../../@core/domain/services/event-producer.service';
 
 @Module({
   controllers: [WasteCollectorsController],
@@ -21,21 +23,24 @@ import { IMaterialRepository } from '../../@core/domain/repositories/material.re
     { provide: WasteCollectorRepositoryImpl, useFactory: () => new WasteCollectorRepositoryImpl(prismaClient) },
     { provide: MaterialRepositoryImpl, useFactory: () => new MaterialRepositoryImpl(prismaClient) },
     { provide: BcryptAdapter, useFactory: () => new BcryptAdapter(8) },
+    { provide: KafkaProducerImpl, useFactory: () => new KafkaProducerImpl((process.env.KAFKA_BROKERS || 'localhost:29092').split(','), process.env.KAFKA_COLLECTOR_TOPIC || 'collector-sync') },
     {
       provide: CreateWasteCollectorUsecase,
       useFactory: (
         repository: IWasteCollectorRepository,
         materialRepository: IMaterialRepository,
         passwordCryptography: IPasswordCryptography,
-        validator: IValidator<TWasteCollectorInputDTO>
+        validator: IValidator<TWasteCollectorInputDTO>,
+        eventProducer: KafkaProducerImpl
       ) => new CreateWasteCollectorUsecase(
         repository,
         materialRepository,
         passwordCryptography,
         validator,
-        wasteCollectorSchema
+        wasteCollectorSchema,
+        eventProducer
       ),
-      inject: [WasteCollectorRepositoryImpl, MaterialRepositoryImpl, BcryptAdapter, YupAdapter]
+      inject: [WasteCollectorRepositoryImpl, MaterialRepositoryImpl, BcryptAdapter, YupAdapter, KafkaProducerImpl]
     },
     {
       provide: FindAllWasteCollectorsUsecase,

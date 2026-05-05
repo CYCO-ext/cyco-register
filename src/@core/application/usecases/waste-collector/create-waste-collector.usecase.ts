@@ -8,6 +8,7 @@ import { wasteCollectorFactory } from "../../factories/waste-collector.factory";
 import { mapWasteCollectorOutput } from "./map";
 import { TWasteCollectorOutputDTO } from "../../dto/output/waste-collector.dto.output";
 import { IMaterialRepository } from "../../../domain/repositories/material.repository";
+import { IEventProducer } from '../../../domain/services/event-producer.service';
 
 export class CreateWasteCollectorUsecase {
   constructor(
@@ -15,7 +16,8 @@ export class CreateWasteCollectorUsecase {
     private readonly materialRepository: IMaterialRepository,
     private readonly passwordCryptography: IPasswordCryptography,
     private readonly validator: IValidator<TWasteCollectorInputDTO>,
-    private readonly schema: object
+    private readonly schema: object,
+    private readonly eventProducer?: IEventProducer
   ) { }
 
   async execute(input: TWasteCollectorInputDTO): Promise<TWasteCollectorOutputDTO> {
@@ -38,6 +40,37 @@ export class CreateWasteCollectorUsecase {
     wasteCollectorValue.getUser().setPassword(password)
 
     const result = await this.wasteCollectorRepository.create(wasteCollectorValue)
-    return mapWasteCollectorOutput(result);
+    const output = mapWasteCollectorOutput(result);
+
+    try {
+      if (this.eventProducer) {
+        const event = this.mapToSyncCollectorEvent(result);
+        await this.eventProducer.publish(process.env.KAFKA_COLLECTOR_TOPIC || 'collector-sync', event);
+      }
+    } catch (err) {
+      console.error('Failed to publish collector created event', err);
+    }
+
+    return output;
+  }
+
+  private mapToSyncCollectorEvent(wasteCollector: any) {
+    const materials = wasteCollector.getMaterials ? wasteCollector.getMaterials() : [];
+    const address = wasteCollector.getAddress ? wasteCollector.getAddress() : null;
+    const user = wasteCollector.getUser ? wasteCollector.getUser() : null;
+
+    return {
+      eventType: 'COLLECTOR_CREATED',
+      collectorId: wasteCollector.getId(),
+      userId: user?.getId(),
+      name: user?.getName(),
+      address: address ? {
+        zipCode: address.getZipCode(),
+        number: address.getNumber(),
+        complement: address.getComplement()
+      } : null,
+      acceptedMaterialIds: materials.map((m: any) => (m.getName ? m.getName() : String(m))),
+      acceptanceRate: 1.0
+    };
   }
 }

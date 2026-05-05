@@ -39,6 +39,8 @@
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "yup": "^0.32.11"
+    ,
+    "kafkajs": "^2.2.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.4.9",

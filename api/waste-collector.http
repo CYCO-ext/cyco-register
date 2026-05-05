@@ -2,9 +2,9 @@ POST http://localhost:3000/waste-collectors
 Content-Type: application/json
 
 {
-  "email": "enterprise@gmail.com",
+  "email": "enterprise21@gmail.com",
   "password": "12345678",
-  "name": "Empresa de Coleta de Lixo",
+  "name": "Empresa de Coleta de Lixo 21",
   "isEnterprise": true,
   "materials": [
     "Glass"
@@ -12,9 +12,9 @@ Content-Type: application/json
    "phone": {
     "ddd": 11,
     "ddi": 55,
-    "number": 961868673
+    "number": 961868644
   },
-  "document": "58608125000189",
+  "document": "58608125000174",
   "address": {
     "zipCode": "06449300"
   },
