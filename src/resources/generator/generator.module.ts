@@ -14,6 +14,7 @@ import { FindGeneratorByIdUsecase } from '../../@core/application/usecases/gener
 import { TAddressInputDTO } from '../../@core/application/dto/input/address.dto.input';
 import { AddAddressUsecase } from '../../@core/application/usecases/generator/add-address.usecase';
 import { addressSchema } from '../../infra/validation/yup/schemas/address.schema';
+import { KafkaProducerImpl } from 'src/infra/kafka/kafka-producer.service';
 
 @Module({
   controllers: [GeneratorController],
@@ -21,19 +22,23 @@ import { addressSchema } from '../../infra/validation/yup/schemas/address.schema
     { provide: YupAdapter, useClass: YupAdapter },
     { provide: GeneratorRepositoryImpl, useFactory: () => new GeneratorRepositoryImpl(prismaClient) },
     { provide: BcryptAdapter, useFactory: () => new BcryptAdapter(8) },
+    { provide: KafkaProducerImpl, useFactory: () => new KafkaProducerImpl((process.env.KAFKA_BROKERS || 'localhost:29092').split(','), process.env.KAFKA_COLLECTOR_TOPIC || 'collector-sync') },
+    
     {
       provide: CreateGeneratorUsecase,
       useFactory: (
         repository: IGeneratorRepository,
         passwordCryptography: IPasswordCryptography,
-        validator: IValidator<TGeneratorInputDTO>
+        validator: IValidator<TGeneratorInputDTO>,
+        eventProducer: KafkaProducerImpl
       ) => new CreateGeneratorUsecase(
         repository,
         passwordCryptography,
         validator,
-        generatorSchema
+        generatorSchema,
+        eventProducer
       ),
-      inject: [GeneratorRepositoryImpl, BcryptAdapter, YupAdapter]
+      inject: [GeneratorRepositoryImpl, BcryptAdapter, YupAdapter, KafkaProducerImpl]
     },
     {
       provide: FindGeneratorByIdUsecase,

@@ -58,6 +58,7 @@ export class KafkaProducerImpl implements IEventProducer {
         const targetTopic = topic || this.defaultTopic;
         try {
             await this.ensureConnected();
+            console.log(`Publishing message to topic ${targetTopic}:`, message);
             await this.producer.send({
                 topic: targetTopic,
                 messages: [{ key: message.collectorId || undefined, value: JSON.stringify(message) }]

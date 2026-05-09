@@ -2,20 +2,20 @@ POST http://localhost:3000/generator
 Content-Type: application/json
 
 {
-  "email": "lidia2@gmail.com",
+  "email": "auroroa@gmail.com",
   "password": "lidia123456",
   "birthDate": "2015-03-25T00:00:00.000Z",
-  "document": "47189168873",
-  "name": "Lídia Galdino 5",
+  "document": "47189168832",
+  "name": "Aurora Padaria",
   "phone": {
     "ddd": 11,
     "ddi": 55,
-    "number": 961869681
+    "number": 978767872
   },
   "address": {
-    "zipCode": "06449301",
-    "complement": "124B",
-    "number": "930"
+    "zipCode": "06449210",
+    "complement": "134c",
+    "number": "235"
   }
 }
 

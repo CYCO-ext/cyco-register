@@ -7,13 +7,16 @@ import { TGeneratorOutputDTO } from "../../dto/output/generator.dto.output";
 import { generatorFactory } from "../../factories/generator.factory";
 import { Password } from "../../../domain/value-objects/password.value-object";
 import { mapGeneratorOutput } from "./map";
+import { IEventProducer } from "src/@core/domain/services/event-producer.service";
+import { Address } from "src/@core/domain/value-objects/address.value-object";
 
 export class CreateGeneratorUsecase {
   constructor(
     private readonly generatorRepository: IGeneratorRepository,
     private readonly passwordCryptography: IPasswordCryptography,
     private readonly validator: IValidator<TGeneratorInputDTO>,
-    private readonly schema: object
+    private readonly schema: object,
+    private readonly eventProducer?: IEventProducer
   ) { }
 
   async execute(input: TGeneratorInputDTO): Promise<TGeneratorOutputDTO> {
@@ -29,6 +32,30 @@ export class CreateGeneratorUsecase {
     generatorValue.getUser().setPassword(password)
 
     const result = await this.generatorRepository.create(generatorValue)
-    return mapGeneratorOutput(result);
+    const output = mapGeneratorOutput(result);
+
+    console.log('Generator created with ID:', result.getId());
+
+    try {
+      if (this.eventProducer) {
+        const event = this.mapToSyncAddressEvent(result.getAddress()[0]);
+        await this.eventProducer.publish(process.env.KAFKA_ADDRESSES_TOPIC || 'addresses-sync', event);
+      }
+    } catch (err) {
+      console.error('Failed to publish addresses created event', err);
+    }
+
+    console.log('Finished CreateGeneratorUsecase execution');
+
+    return output;
+  }
+
+  private mapToSyncAddressEvent(address: Address) {
+
+    return {
+      zipCode: address.getZipCode(),
+      number: address.getNumber(),
+      complement: address.getComplement()
+    };
   }
 }
