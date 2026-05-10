@@ -127,6 +127,8 @@ export class GeneratorRepositoryImpl implements IGeneratorRepository {
       number: it.number
     }).getValue())
 
+    address[0].setId(result.tbl_generator_address[0].id)
+
     const generator = Generator.create({
       birthDate: result.birthDate,
       document: result.document,

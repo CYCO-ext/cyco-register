@@ -4,4 +4,10 @@ export type TUserPrismaResult = {
   password: string;
   phone: string;
   name: string;
+  tbl_generator: {
+    id: string;
+  }[],
+  tbl_waste_collector: {
+    id: string;
+  }[]
 }

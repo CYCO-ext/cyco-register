@@ -50,3 +50,7 @@ Content-Type: application/json
 
 ###
 GET http://localhost:3000/waste-collectors
+
+###
+GET http://localhost:3000/waste-collectors/b6a59cbf-b0ba-45c2-90df-f48d92b93cc7
+

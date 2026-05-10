@@ -12,6 +12,7 @@ export type TGeneratorPrismaResult = {
   birthDate: Date;
   user_id: string;
   tbl_generator_address: {
+    id: string;
     complement: string;
     number: string;
     address: {

@@ -8,6 +8,7 @@ export type TGeneratorOutputDTO = {
     number: string;
   };
   address: {
+    id: string;
     zipCode: string;
     number: string;
     complement: string;

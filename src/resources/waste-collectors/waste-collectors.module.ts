@@ -15,6 +15,7 @@ import { MaterialRepositoryImpl } from '../../infra/db/prisma/repositories/mater
 import { IMaterialRepository } from '../../@core/domain/repositories/material.repository';
 import { KafkaProducerImpl } from '../../infra/kafka/kafka-producer.service';
 import { IEventProducer } from '../../@core/domain/services/event-producer.service';
+import { FindWasteCollectorByIdUsecase } from 'src/@core/application/usecases/waste-collector/find-waste-collector-by-id.usecase';
 
 @Module({
   controllers: [WasteCollectorsController],
@@ -51,6 +52,15 @@ import { IEventProducer } from '../../@core/domain/services/event-producer.servi
       ),
       inject: [WasteCollectorRepositoryImpl]
     },
+    {
+      provide: FindWasteCollectorByIdUsecase,
+      useFactory: (
+        repository: IWasteCollectorRepository
+      ) => new FindWasteCollectorByIdUsecase(
+        repository
+      ),
+      inject: [WasteCollectorRepositoryImpl]
+    }
     // {
     //   provide: AddAddressUsecase,
     //   useFactory: (

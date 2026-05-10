@@ -2,6 +2,7 @@ import { Guard } from '../shared/guard/guard';
 import { Result } from '../shared/result/result';
 
 export type TAddressProps = {
+  id?: string;
   zipCode: string;
   number?: string;
   complement?: string;
@@ -35,6 +36,18 @@ export class Address {
       return Result.fail<Address>(guardResults.getErrorValue());
 
     return Result.ok<Address>(new Address(address));
+  }
+
+  /**
+   * Gets the ID of the address.
+   * @returns The ID of the Address.
+   */
+  getId() {
+    return this.props.id;
+  }
+
+  setId(id: string) {
+    this.props.id = id;
   }
 
   /**

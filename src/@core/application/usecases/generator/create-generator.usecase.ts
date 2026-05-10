@@ -53,6 +53,7 @@ export class CreateGeneratorUsecase {
   private mapToSyncAddressEvent(address: Address) {
 
     return {
+      id: address.getId(),
       zipCode: address.getZipCode(),
       number: address.getNumber(),
       complement: address.getComplement()

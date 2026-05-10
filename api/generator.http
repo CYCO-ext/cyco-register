@@ -2,25 +2,25 @@ POST http://localhost:3000/generator
 Content-Type: application/json
 
 {
-  "email": "auroroa@gmail.com",
-  "password": "lidia123456",
+  "email": "lingo@gmail.com",
+  "password": "lingo123",
   "birthDate": "2015-03-25T00:00:00.000Z",
-  "document": "47189168832",
-  "name": "Aurora Padaria",
+  "document": "47189168833",
+  "name": "Lingo Lingo",
   "phone": {
     "ddd": 11,
     "ddi": 55,
-    "number": 978767872
+    "number": 978767873
   },
   "address": {
-    "zipCode": "06449210",
+    "zipCode": "06648125",
     "complement": "134c",
-    "number": "235"
+    "number": "50"
   }
 }
 
 ###
-GET http://localhost:3000/generator/0b086b24-f98b-410a-8ad3-84803a2254b7
+GET http://localhost:3000/generator/03c12c37-631e-4828-bb13-94bd343b70b2
 
 ###
 POST http://localhost:3000/generator/fe875bd7-1674-4e8d-a27a-e2c03f3c814a/address

@@ -14,6 +14,7 @@ export const mapGeneratorOutput = (generator: Generator): TGeneratorOutputDTO =>
       number: generator.getUser().getPhone().getNumber()
     },
     address: generator.getAddress().map(item => ({
+      id: item.getId(),
       zipCode: item.getZipCode(),
       number: item.getNumber(),
       complement: item.getComplement()

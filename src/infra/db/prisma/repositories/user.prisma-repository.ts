@@ -12,6 +12,10 @@ export class UserRepositoryImpl implements IUserRepository {
     const result = await this.prisma.tbl_user.findUnique({
       where: {
         email,
+      },
+      include: {
+        tbl_generator: true,
+        tbl_waste_collector: true
       }
     })
 
@@ -41,6 +45,8 @@ export class UserRepositoryImpl implements IUserRepository {
       password: Password.create({ password: result.password }).getValue(),
       phone: Phone.createFromString(result.phone).getValue()
     }).getValue();
+
+    user.setId(result.tbl_generator.length > 0 ? result.tbl_generator[0].id : result.tbl_waste_collector[0].id)
     return user
   }
 }
