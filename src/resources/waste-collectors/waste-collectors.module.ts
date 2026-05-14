@@ -15,7 +15,8 @@ import { MaterialRepositoryImpl } from '../../infra/db/prisma/repositories/mater
 import { IMaterialRepository } from '../../@core/domain/repositories/material.repository';
 import { KafkaProducerImpl } from '../../infra/kafka/kafka-producer.service';
 import { IEventProducer } from '../../@core/domain/services/event-producer.service';
-import { FindWasteCollectorByIdUsecase } from 'src/@core/application/usecases/waste-collector/find-waste-collector-by-id.usecase';
+import { FindWasteCollectorByIdUsecase } from '../../@core/application/usecases/waste-collector/find-waste-collector-by-id.usecase';
+import { UpdateWasteCollectorUsecase } from '../../@core/application/usecases/waste-collector/update-waste-collector.usecase';
 
 @Module({
   controllers: [WasteCollectorsController],
@@ -60,6 +61,24 @@ import { FindWasteCollectorByIdUsecase } from 'src/@core/application/usecases/wa
         repository
       ),
       inject: [WasteCollectorRepositoryImpl]
+    },
+    {
+      provide: UpdateWasteCollectorUsecase,
+      useFactory: (
+        repository: IWasteCollectorRepository,
+        materialRepository: IMaterialRepository,
+        passwordCryptography: IPasswordCryptography,
+        validator: IValidator<TWasteCollectorInputDTO>,
+        eventProducer: KafkaProducerImpl
+      ) => new UpdateWasteCollectorUsecase(
+        repository,
+        materialRepository,
+        passwordCryptography,
+        validator,
+        wasteCollectorSchema,
+        eventProducer
+      ),
+      inject: [WasteCollectorRepositoryImpl, MaterialRepositoryImpl, BcryptAdapter, YupAdapter, KafkaProducerImpl]
     }
     // {
     //   provide: AddAddressUsecase,

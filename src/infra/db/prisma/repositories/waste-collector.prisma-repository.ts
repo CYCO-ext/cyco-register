@@ -104,8 +104,121 @@ export class WasteCollectorRepositoryImpl implements IWasteCollectorRepository {
     return result ? this.mapOutput(result) : null;
   }
 
-  update(wasteCollector: WasteCollector): Promise<WasteCollector> {
-    throw new Error("Method not implemented.")
+  async update(wasteCollector: WasteCollector): Promise<WasteCollector> {
+    const materialNames = wasteCollector.getMaterials().map(material => material.getName());
+    const materials = await this.prisma.tbl_materials.findMany({
+      where: {
+        name: { in: materialNames }
+      },
+      select: {
+        id: true,
+        name: true
+      }
+    });
+    const materialIdsByName = new Map(materials.map(material => [material.name, material.id]));
+
+    const updated = await this.prisma.$transaction(async (tx) => {
+      const existing = await tx.tbl_waste_collector.findUnique({
+        where: { id: wasteCollector.getId() },
+        select: {
+          id: true,
+          user_id: true
+        }
+      });
+
+      if (!existing) return null;
+
+      await tx.tbl_waste_collector.update({
+        where: { id: wasteCollector.getId() },
+        data: {
+          document: wasteCollector.getDocument(),
+          isEnterprise: wasteCollector.isEnterprise()
+        }
+      });
+
+      await tx.tbl_user.update({
+        where: { id: existing.user_id },
+        data: {
+          name: wasteCollector.getUser().getName(),
+          phone: wasteCollector.getUser().getPhone().getPhone(),
+          email: wasteCollector.getUser().getEmail(),
+          password: wasteCollector.getUser().getPassword().getPassword()
+        }
+      });
+
+      await tx.tbl_waste_collector_address.deleteMany({
+        where: { waste_collector_id: wasteCollector.getId() }
+      });
+
+      await tx.tbl_waste_collector_address.create({
+        data: {
+          waste_collector: {
+            connect: { id: wasteCollector.getId() }
+          },
+          number: wasteCollector.getAddress().getNumber(),
+          complement: wasteCollector.getAddress().getComplement(),
+          address: {
+            connectOrCreate: {
+              where: {
+                zipCode: wasteCollector.getAddress().getZipCode()
+              },
+              create: {
+                zipCode: wasteCollector.getAddress().getZipCode()
+              }
+            }
+          }
+        }
+      });
+
+      await tx.tbl_enterprise.deleteMany({
+        where: { waste_collector_id: wasteCollector.getId() }
+      });
+
+      if (wasteCollector.isEnterprise()) {
+        await tx.tbl_enterprise.create({
+          data: {
+            waste_collector_id: wasteCollector.getId(),
+            commercialName: wasteCollector.getEnterprise().getCommercialName(),
+            companyName: wasteCollector.getEnterprise().getCompanyName()
+          }
+        });
+      }
+
+      await tx.tbl_materials_waste_collector.deleteMany({
+        where: { waste_collector_id: wasteCollector.getId() }
+      });
+
+      await tx.tbl_materials_waste_collector.createMany({
+        data: materialNames.map(name => ({
+          waste_collector_id: wasteCollector.getId(),
+          materials_id: materialIdsByName.get(name) as string
+        }))
+      });
+
+      return true;
+    });
+
+    if (!updated) return null;
+
+    const result = await this.prisma.tbl_waste_collector.findUnique({
+      where: { id: wasteCollector.getId() },
+      include: {
+        user: true,
+        tbl_waste_collector_address: {
+          include: {
+            address: true
+          }
+        },
+        tbl_enterprise: true,
+        tbl_materials_waste_collector: {
+          select: {
+            materials: true
+          }
+        }
+      }
+    });
+
+    return result ? this.mapOutput(result) : null;
   }
   delete(id: string): Promise<void> {
     throw new Error("Method not implemented.")

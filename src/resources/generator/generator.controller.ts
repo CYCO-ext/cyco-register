@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseFilters } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseFilters, Put } from '@nestjs/common';
 import { CreateGeneratorUsecase } from '../../@core/application/usecases/generator/create-generator.usecase';
 import { TGeneratorInputDTO } from '../../@core/application/dto/input/generator.dto.input';
 import { FindGeneratorByIdUsecase } from '../../@core/application/usecases/generator/find-generator-by-id.usecase';
 import { PrismaClientExceptionFilter } from '../../infra/error/prisma-client.exception-filter';
 import { AddAddressUsecase } from '../../@core/application/usecases/generator/add-address.usecase';
 import { TAddressInputDTO } from '../../@core/application/dto/input/address.dto.input';
+import { UpdateGeneratorUsecase } from '../../@core/application/usecases/generator/update-generator.usecase';
 
 @Controller('generator')
 @UseFilters(PrismaClientExceptionFilter)
@@ -12,7 +13,8 @@ export class GeneratorController {
   constructor(
     private readonly createUsecase: CreateGeneratorUsecase,
     private readonly findByIdUsecase: FindGeneratorByIdUsecase,
-    private readonly addAddressUsecase: AddAddressUsecase
+    private readonly addAddressUsecase: AddAddressUsecase,
+    private readonly updateUsecase: UpdateGeneratorUsecase
   ) { }
 
   @Post()
@@ -33,6 +35,11 @@ export class GeneratorController {
   @Post(':id/address')
   addAddress(@Param('id') id: string, @Body() address: TAddressInputDTO) {
     return this.addAddressUsecase.execute(address, id);
+  }
+
+  @Put(':id')
+  update(@Param('id') id: string, @Body() updateGeneratorDto: TGeneratorInputDTO) {
+    return this.updateUsecase.execute(id, updateGeneratorDto);
   }
 
   // @Delete(':id')

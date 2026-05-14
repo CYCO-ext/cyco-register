@@ -23,6 +23,28 @@ Content-Type: application/json
 GET http://localhost:3000/generator/03c12c37-631e-4828-bb13-94bd343b70b2
 
 ###
+PUT http://localhost:3000/generator/03c12c37-631e-4828-bb13-94bd343b70b2
+Content-Type: application/json
+
+{
+  "email": "aurora.updated@gmail.com",
+  "password": "12345678",
+  "birthDate": "2015-03-25T00:00:00.000Z",
+  "document": "47189168833",
+  "name": "Aurora Atualizado",
+  "phone": {
+    "ddd": 11,
+    "ddi": 55,
+    "number": "978767872"
+  },
+  "address": {
+    "zipCode": "06449210",
+    "complement": "134c",
+    "number": "50"
+  }
+}
+
+###
 POST http://localhost:3000/generator/fe875bd7-1674-4e8d-a27a-e2c03f3c814a/address
 Content-Type: application/json
 

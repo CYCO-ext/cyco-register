@@ -54,3 +54,32 @@ GET http://localhost:3000/waste-collectors
 ###
 GET http://localhost:3000/waste-collectors/b6a59cbf-b0ba-45c2-90df-f48d92b93cc7
 
+###
+PUT http://localhost:3000/waste-collectors/2f5ba1d6-2f89-4d02-88f7-bad3e71a3550
+Content-Type: application/json
+
+{
+  "email": "lidia.updated@gmail.com",
+  "password": "12345678",
+  "name": "Lidia Atualizado 2",
+  "isEnterprise": true,
+  "materials": [
+    "Glass",
+    "Plastic"
+  ],
+  "phone": {
+    "ddd": 11,
+    "ddi": 55,
+    "number": "951869683"
+  },
+  "document": "47189168877",
+  "address": {
+    "zipCode": "06449300",
+    "number": "10",
+    "complement": "Casa"
+  },
+  "enterprise": {
+    "companyName": "Lidia Coleta de Lixo Ltda",
+    "commercialName": "Lidia Coleta de Lixo"
+  }
+}

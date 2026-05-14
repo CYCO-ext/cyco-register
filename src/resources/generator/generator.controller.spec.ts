@@ -11,6 +11,11 @@ import { prismaClient } from '../../infra/db/prisma';
 import { GeneratorRepositoryImpl } from '../../infra/db/prisma/repositories/generator.prisma-repository';
 import { generatorSchema } from '../../infra/validation/yup/schemas/generator.schema';
 import { YupAdapter } from '../../infra/validation/yup/yup.adapter';
+import { AddAddressUsecase } from '../../@core/application/usecases/generator/add-address.usecase';
+import { TAddressInputDTO } from '../../@core/application/dto/input/address.dto.input';
+import { addressSchema } from '../../infra/validation/yup/schemas/address.schema';
+import { KafkaProducerImpl } from '../../infra/kafka/kafka-producer.service';
+import { UpdateGeneratorUsecase } from '../../@core/application/usecases/generator/update-generator.usecase';
 
 describe('GeneratorController', () => {
   let controller: GeneratorController;
@@ -22,19 +27,22 @@ describe('GeneratorController', () => {
         { provide: YupAdapter, useClass: YupAdapter },
         { provide: GeneratorRepositoryImpl, useFactory: () => new GeneratorRepositoryImpl(prismaClient) },
         { provide: BcryptAdapter, useFactory: () => new BcryptAdapter(8) },
+        { provide: KafkaProducerImpl, useFactory: () => new KafkaProducerImpl(['localhost:29092'], 'addresses-sync') },
         {
           provide: CreateGeneratorUsecase,
           useFactory: (
             repository: IGeneratorRepository,
             passwordCryptography: IPasswordCryptography,
-            validator: IValidator<TGeneratorInputDTO>
+            validator: IValidator<TGeneratorInputDTO>,
+            eventProducer: KafkaProducerImpl
           ) => new CreateGeneratorUsecase(
             repository,
             passwordCryptography,
             validator,
-            generatorSchema
+            generatorSchema,
+            eventProducer
           ),
-          inject: [GeneratorRepositoryImpl, BcryptAdapter, YupAdapter]
+          inject: [GeneratorRepositoryImpl, BcryptAdapter, YupAdapter, KafkaProducerImpl]
         },
         {
           provide: FindGeneratorByIdUsecase,
@@ -44,6 +52,34 @@ describe('GeneratorController', () => {
             repository
           ),
           inject: [GeneratorRepositoryImpl]
+        },
+        {
+          provide: AddAddressUsecase,
+          useFactory: (
+            repository: IGeneratorRepository,
+            validator: IValidator<TAddressInputDTO>
+          ) => new AddAddressUsecase(
+            repository,
+            validator,
+            addressSchema
+          ),
+          inject: [GeneratorRepositoryImpl, YupAdapter]
+        },
+        {
+          provide: UpdateGeneratorUsecase,
+          useFactory: (
+            repository: IGeneratorRepository,
+            passwordCryptography: IPasswordCryptography,
+            validator: IValidator<TGeneratorInputDTO>,
+            eventProducer: KafkaProducerImpl
+          ) => new UpdateGeneratorUsecase(
+            repository,
+            passwordCryptography,
+            validator,
+            generatorSchema,
+            eventProducer
+          ),
+          inject: [GeneratorRepositoryImpl, BcryptAdapter, YupAdapter, KafkaProducerImpl]
         }
       ],
     }).compile();

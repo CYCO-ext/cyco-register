@@ -7,7 +7,7 @@
 .azureignore
 deploy.zip
 .docker
-
+.specs
 # Logs
 logs
 *.log

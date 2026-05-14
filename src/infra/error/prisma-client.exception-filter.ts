@@ -31,6 +31,12 @@ export class PrismaClientExceptionFilter implements ExceptionFilter {
         break;
     }
 
+    console.error('Prisma Client Error:', {
+      code: exception.code,
+      message: exception.message,
+      meta: exception.meta
+    });
+
     response.status(statusCode).json({
       statusCode,
       message,

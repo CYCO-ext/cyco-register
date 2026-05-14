@@ -108,6 +108,80 @@ export class GeneratorRepositoryImpl implements IGeneratorRepository {
     return this.mapOutput(result)
   }
 
+  async update(generator: Generator): Promise<Generator> {
+    const updated = await this.prisma.$transaction(async (tx) => {
+      const existing = await tx.tbl_generator.findUnique({
+        where: { id: generator.getId() },
+        select: {
+          id: true,
+          user_id: true
+        }
+      });
+
+      if (!existing) return null;
+
+      await tx.tbl_generator.update({
+        where: { id: generator.getId() },
+        data: {
+          document: generator.getDocument(),
+          birthDate: generator.getBirthDate()
+        }
+      });
+
+      await tx.tbl_user.update({
+        where: { id: existing.user_id },
+        data: {
+          name: generator.getUser().getName(),
+          phone: generator.getUser().getPhone().getPhone(),
+          email: generator.getUser().getEmail(),
+          password: generator.getUser().getPassword().getPassword()
+        }
+      });
+
+      await tx.tbl_generator_address.deleteMany({
+        where: { generator_id: generator.getId() }
+      });
+
+      await tx.tbl_generator_address.create({
+        data: {
+          generator: {
+            connect: { id: generator.getId() }
+          },
+          complement: generator.getAddress()[0].getComplement(),
+          number: generator.getAddress()[0].getNumber(),
+          address: {
+            connectOrCreate: {
+              where: {
+                zipCode: generator.getAddress()[0].getZipCode()
+              },
+              create: {
+                zipCode: generator.getAddress()[0].getZipCode()
+              }
+            }
+          }
+        }
+      });
+
+      return true;
+    });
+
+    if (!updated) return null;
+
+    const result = await this.prisma.tbl_generator.findUnique({
+      where: { id: generator.getId() },
+      include: {
+        user: true,
+        tbl_generator_address: {
+          include: {
+            address: true
+          }
+        }
+      }
+    });
+
+    return result ? this.mapOutput(result) : null
+  }
+
   private mapOutput(result: TGeneratorPrismaResult): Generator {
     const password = Password.create({ password: result.user.password }).getValue()
 

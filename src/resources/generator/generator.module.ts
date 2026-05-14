@@ -14,7 +14,8 @@ import { FindGeneratorByIdUsecase } from '../../@core/application/usecases/gener
 import { TAddressInputDTO } from '../../@core/application/dto/input/address.dto.input';
 import { AddAddressUsecase } from '../../@core/application/usecases/generator/add-address.usecase';
 import { addressSchema } from '../../infra/validation/yup/schemas/address.schema';
-import { KafkaProducerImpl } from 'src/infra/kafka/kafka-producer.service';
+import { KafkaProducerImpl } from '../../infra/kafka/kafka-producer.service';
+import { UpdateGeneratorUsecase } from '../../@core/application/usecases/generator/update-generator.usecase';
 
 @Module({
   controllers: [GeneratorController],
@@ -60,6 +61,22 @@ import { KafkaProducerImpl } from 'src/infra/kafka/kafka-producer.service';
         addressSchema
       ),
       inject: [GeneratorRepositoryImpl, YupAdapter]
+    },
+    {
+      provide: UpdateGeneratorUsecase,
+      useFactory: (
+        repository: IGeneratorRepository,
+        passwordCryptography: IPasswordCryptography,
+        validator: IValidator<TGeneratorInputDTO>,
+        eventProducer: KafkaProducerImpl
+      ) => new UpdateGeneratorUsecase(
+        repository,
+        passwordCryptography,
+        validator,
+        generatorSchema,
+        eventProducer
+      ),
+      inject: [GeneratorRepositoryImpl, BcryptAdapter, YupAdapter, KafkaProducerImpl]
     }
   ],
 })
