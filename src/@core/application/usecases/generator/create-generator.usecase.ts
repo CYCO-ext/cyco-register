@@ -1,5 +1,6 @@
-import { UnprocessableEntityException } from "@nestjs/common";
+import { ConflictException, UnprocessableEntityException } from "@nestjs/common";
 import { IGeneratorRepository } from "../../../domain/repositories/generator.repository";
+import { IUserRepository } from "../../../domain/repositories/user-repository.repository";
 import { IPasswordCryptography } from "../../../domain/services/password-cryptography.service";
 import { IValidator } from "../../../domain/services/validator.service";
 import { TGeneratorInputDTO } from "../../dto/input/generator.dto.input";
@@ -13,6 +14,7 @@ import { Address } from "../../../domain/value-objects/address.value-object";
 export class CreateGeneratorUsecase {
   constructor(
     private readonly generatorRepository: IGeneratorRepository,
+    private readonly userRepository: IUserRepository,
     private readonly passwordCryptography: IPasswordCryptography,
     private readonly validator: IValidator<TGeneratorInputDTO>,
     private readonly schema: object,
@@ -22,6 +24,9 @@ export class CreateGeneratorUsecase {
   async execute(input: TGeneratorInputDTO): Promise<TGeneratorOutputDTO> {
     const { isValid, errorsResult } = this.validator.validate(this.schema, input)
     if (!isValid) throw new UnprocessableEntityException(errorsResult);
+
+    const userAlreadyExists = await this.userRepository.findByEmail(input.email);
+    if (userAlreadyExists) throw new ConflictException('Email already exists');
 
     const generator = generatorFactory(input)
     if (!generator.isRight()) throw new UnprocessableEntityException(generator.value.getErrorValue())

@@ -1,5 +1,6 @@
-import { UnprocessableEntityException } from "@nestjs/common";
+import { ConflictException, UnprocessableEntityException } from "@nestjs/common";
 import { IWasteCollectorRepository } from "../../../domain/repositories/waste-collector.repository";
+import { IUserRepository } from "../../../domain/repositories/user-repository.repository";
 import { IPasswordCryptography } from "../../../domain/services/password-cryptography.service";
 import { IValidator } from "../../../domain/services/validator.service";
 import { Password } from "../../../domain/value-objects/password.value-object";
@@ -14,6 +15,7 @@ export class CreateWasteCollectorUsecase {
   constructor(
     private readonly wasteCollectorRepository: IWasteCollectorRepository,
     private readonly materialRepository: IMaterialRepository,
+    private readonly userRepository: IUserRepository,
     private readonly passwordCryptography: IPasswordCryptography,
     private readonly validator: IValidator<TWasteCollectorInputDTO>,
     private readonly schema: object,
@@ -23,6 +25,9 @@ export class CreateWasteCollectorUsecase {
   async execute(input: TWasteCollectorInputDTO): Promise<TWasteCollectorOutputDTO> {
     const { isValid, errorsResult } = this.validator.validate(this.schema, input)
     if (!isValid) throw new UnprocessableEntityException(errorsResult);
+
+    const userAlreadyExists = await this.userRepository.findByEmail(input.email);
+    if (userAlreadyExists) throw new ConflictException('Email already exists');
 
     await Promise.all(input.materials.map(async (material) => {
       const materialEntity = await this.materialRepository.findByName(material);

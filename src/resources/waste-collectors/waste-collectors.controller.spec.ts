@@ -16,6 +16,8 @@ import { IMaterialRepository } from '../../@core/domain/repositories/material.re
 import { KafkaProducerImpl } from '../../infra/kafka/kafka-producer.service';
 import { UpdateWasteCollectorUsecase } from '../../@core/application/usecases/waste-collector/update-waste-collector.usecase';
 import { FindWasteCollectorByIdUsecase } from '../../@core/application/usecases/waste-collector/find-waste-collector-by-id.usecase';
+import { UserRepositoryImpl } from '../../infra/db/prisma/repositories/user.prisma-repository';
+import { IUserRepository } from '../../@core/domain/repositories/user-repository.repository';
 
 describe('WasteCollectorsController', () => {
   let controller: WasteCollectorsController;
@@ -27,6 +29,7 @@ describe('WasteCollectorsController', () => {
         { provide: YupAdapter, useClass: YupAdapter },
         { provide: WasteCollectorRepositoryImpl, useFactory: () => new WasteCollectorRepositoryImpl(prismaClient) },
         { provide: MaterialRepositoryImpl, useFactory: () => new MaterialRepositoryImpl(prismaClient) },
+        { provide: UserRepositoryImpl, useFactory: () => new UserRepositoryImpl(prismaClient) },
         { provide: BcryptAdapter, useFactory: () => new BcryptAdapter(8) },
         { provide: KafkaProducerImpl, useFactory: () => new KafkaProducerImpl(['localhost:29092'], 'collector-sync') },
         {
@@ -34,18 +37,20 @@ describe('WasteCollectorsController', () => {
           useFactory: (
             repository: IWasteCollectorRepository,
             materialRepository: IMaterialRepository,
+            userRepository: IUserRepository,
             passwordCryptography: IPasswordCryptography,
             validator: IValidator<TWasteCollectorInputDTO>,
             eventProducer: KafkaProducerImpl
           ) => new CreateWasteCollectorUsecase(
             repository,
             materialRepository,
+            userRepository,
             passwordCryptography,
             validator,
             wasteCollectorSchema,
             eventProducer
           ),
-          inject: [WasteCollectorRepositoryImpl, MaterialRepositoryImpl, BcryptAdapter, YupAdapter, KafkaProducerImpl]
+          inject: [WasteCollectorRepositoryImpl, MaterialRepositoryImpl, UserRepositoryImpl, BcryptAdapter, YupAdapter, KafkaProducerImpl]
         },
         {
           provide: FindAllWasteCollectorsUsecase,

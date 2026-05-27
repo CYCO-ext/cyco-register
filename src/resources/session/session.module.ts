@@ -13,6 +13,16 @@ import { IValidator } from '../../@core/domain/services/validator.service';
 import { TSessionInputDTO } from '../../@core/application/dto/input/session.dto.input';
 import { loginSchema } from '../../infra/validation/yup/schemas/login.schema';
 
+function getRequiredEnv(name: string): string {
+  const value = process.env[name];
+
+  if (!value) {
+    throw new Error(`${name} environment variable must be set`);
+  }
+
+  return value;
+}
+
 @Module({
   controllers: [SessionController],
   providers: [
@@ -27,13 +37,13 @@ import { loginSchema } from '../../infra/validation/yup/schemas/login.schema';
     {
       provide: JwtAdapter,
       useFactory: () => {
-        return new JwtAdapter(process.env.SECRET, process.env.EXPIRES_IN);
+        return new JwtAdapter(getRequiredEnv('SECRET'), getRequiredEnv('EXPIRES_IN'));
       },
     },
     {
       provide: BcryptAdapter,
       useFactory: () => {
-        return new BcryptAdapter(Number(process.env.SALT));
+        return new BcryptAdapter(Number(getRequiredEnv('SALT')));
       },
     },
     {
