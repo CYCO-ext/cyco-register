@@ -2,20 +2,20 @@ POST http://localhost:3000/generator
 Content-Type: application/json
 
 {
-  "email": "lingo@gmail.com",
-  "password": "lingo123",
+  "email": "lidio@gmail.com",
+  "password": "12345678",
   "birthDate": "2015-03-25T00:00:00.000Z",
-  "document": "47189168833",
-  "name": "Lingo Lingo",
+  "document": "47189168830",
+  "name": "Lidio",
   "phone": {
     "ddd": 11,
     "ddi": 55,
-    "number": 978767873
+    "number": 951869681
   },
   "address": {
-    "zipCode": "06648125",
+    "zipCode": "06449300",
     "complement": "134c",
-    "number": "50"
+    "number": "952"
   }
 }
 

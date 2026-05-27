@@ -1,1 +1,5 @@
 GET http://localhost:3000/materials
+
+
+###
+GET https://https://nest-api-332280200105.southamerica-east1.run.app/materials

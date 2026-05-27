@@ -2,12 +2,12 @@ POST http://localhost:3000/waste-collectors
 Content-Type: application/json
 
 {
-  "email": "enterprise22@gmail.com",
+  "email": "enterprise@gmail.com",
   "password": "12345678",
-  "name": "Empresa de Coleta de Lixo 22",
+  "name": "Empresa de Coleta de Lixo",
   "isEnterprise": true,
   "materials": [
-    "Glass"
+    "Metal"
   ],
    "phone": {
     "ddd": 11,
@@ -30,19 +30,19 @@ POST http://localhost:3000/waste-collectors
 Content-Type: application/json
 
 {
-  "email": "collector@gmail.com",
+  "email": "glass@gmail.com",
   "password": "12345678",
-  "name": "Catador",
+  "name": "Vidro Coleta de Lixo",
   "isEnterprise": false,
   "materials": [
-    "Glass"
+    "Vidro"
   ],
    "phone": {
     "ddd": 11,
     "ddi": 55,
-    "number": 961868671
+    "number": 961868670
   },
-  "document": "16543092068",
+  "document": "16543092069",
   "address": {
     "zipCode": "06449300"
   }

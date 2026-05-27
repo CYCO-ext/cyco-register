@@ -13,7 +13,7 @@ import { wasteCollectorSchema } from '../../infra/validation/yup/schemas/waste-c
 import { FindAllWasteCollectorsUsecase } from '../../@core/application/usecases/waste-collector/find-all-waste-collectors.usecase';
 import { MaterialRepositoryImpl } from '../../infra/db/prisma/repositories/material.prisma-repository';
 import { IMaterialRepository } from '../../@core/domain/repositories/material.repository';
-import { KafkaProducerImpl } from '../../infra/kafka/kafka-producer.service';
+import { getKafkaBrokers, KafkaProducerImpl } from '../../infra/kafka/kafka-producer.service';
 import { IEventProducer } from '../../@core/domain/services/event-producer.service';
 import { FindWasteCollectorByIdUsecase } from '../../@core/application/usecases/waste-collector/find-waste-collector-by-id.usecase';
 import { UpdateWasteCollectorUsecase } from '../../@core/application/usecases/waste-collector/update-waste-collector.usecase';
@@ -25,7 +25,7 @@ import { UpdateWasteCollectorUsecase } from '../../@core/application/usecases/wa
     { provide: WasteCollectorRepositoryImpl, useFactory: () => new WasteCollectorRepositoryImpl(prismaClient) },
     { provide: MaterialRepositoryImpl, useFactory: () => new MaterialRepositoryImpl(prismaClient) },
     { provide: BcryptAdapter, useFactory: () => new BcryptAdapter(8) },
-    { provide: KafkaProducerImpl, useFactory: () => new KafkaProducerImpl((process.env.KAFKA_BROKERS || 'localhost:29092').split(','), process.env.KAFKA_COLLECTOR_TOPIC || 'collector-sync') },
+    { provide: KafkaProducerImpl, useFactory: () => new KafkaProducerImpl(getKafkaBrokers(), process.env.KAFKA_COLLECTOR_TOPIC || 'collector-sync') },
     {
       provide: CreateWasteCollectorUsecase,
       useFactory: (

@@ -14,7 +14,7 @@ import { FindGeneratorByIdUsecase } from '../../@core/application/usecases/gener
 import { TAddressInputDTO } from '../../@core/application/dto/input/address.dto.input';
 import { AddAddressUsecase } from '../../@core/application/usecases/generator/add-address.usecase';
 import { addressSchema } from '../../infra/validation/yup/schemas/address.schema';
-import { KafkaProducerImpl } from '../../infra/kafka/kafka-producer.service';
+import { getKafkaBrokers, KafkaProducerImpl } from '../../infra/kafka/kafka-producer.service';
 import { UpdateGeneratorUsecase } from '../../@core/application/usecases/generator/update-generator.usecase';
 
 @Module({
@@ -23,7 +23,7 @@ import { UpdateGeneratorUsecase } from '../../@core/application/usecases/generat
     { provide: YupAdapter, useClass: YupAdapter },
     { provide: GeneratorRepositoryImpl, useFactory: () => new GeneratorRepositoryImpl(prismaClient) },
     { provide: BcryptAdapter, useFactory: () => new BcryptAdapter(8) },
-    { provide: KafkaProducerImpl, useFactory: () => new KafkaProducerImpl((process.env.KAFKA_BROKERS || 'localhost:29092').split(','), process.env.KAFKA_COLLECTOR_TOPIC || 'collector-sync') },
+    { provide: KafkaProducerImpl, useFactory: () => new KafkaProducerImpl(getKafkaBrokers(), process.env.KAFKA_COLLECTOR_TOPIC || 'collector-sync') },
     
     {
       provide: CreateGeneratorUsecase,

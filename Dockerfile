@@ -1,35 +1,29 @@
-# Estágio de construção
-FROM node:18-alpine AS builder
+FROM node:25-alpine AS builder
 
 WORKDIR /app
 
-COPY . .
+COPY package*.json ./
+COPY prisma ./prisma
 
-RUN npm install -g prisma
 RUN npm ci
 RUN npx prisma generate
+
+COPY . .
 RUN npm run build
+RUN npm prune --omit=dev
 
-# ----------------------------
 
-# Estágio de produção
-FROM node:18-alpine
+FROM node:25-alpine
 
 WORKDIR /app
 
-# Copia apenas o necessário
-COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma 
-COPY --from=builder /app/entrypoint.sh ./entrypoint.sh
+COPY package*.json ./
+COPY ca.pem ./ca.pem
 
+ENV NODE_ENV=production
 
-# Variáveis de ambiente
-ENV NODE_ENV production
-ENV PORT 3000
-EXPOSE 3000
+EXPOSE 8080
 
-RUN chmod +x ./entrypoint.sh
-
-ENTRYPOINT ["./entrypoint.sh"]
+CMD ["node", "dist/src/main.js"]

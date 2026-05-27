@@ -1,8 +1,60 @@
-import { Kafka, Producer, KafkaConfig, Admin } from 'kafkajs';
+import { Kafka, Producer, KafkaConfig, Admin, SASLMechanism, SASLOptions } from 'kafkajs';
+import { readFileSync } from 'node:fs';
 import { IEventProducer } from '../../@core/domain/services/event-producer.service';
 
 function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function getKafkaSaslConfig(): SASLOptions | undefined {
+    const username = process.env.KAFKA_SASL_USERNAME;
+    const password = process.env.KAFKA_SASL_PASSWORD;
+
+    if (!username || !password) return undefined;
+
+    const mechanism = (process.env.KAFKA_SASL_MECHANISM || 'plain') as SASLMechanism;
+
+    switch (mechanism) {
+        case 'plain':
+            return { mechanism, username, password };
+        case 'scram-sha-256':
+            return { mechanism, username, password };
+        case 'scram-sha-512':
+            return { mechanism, username, password };
+        default:
+            throw new Error(`Unsupported Kafka SASL mechanism: ${mechanism}`);
+    }
+}
+
+function getKafkaSslConfig(): KafkaConfig['ssl'] {
+    if (process.env.KAFKA_SSL !== 'true') return false;
+
+    const ca = process.env.KAFKA_CA_CERT;
+    const caPath = process.env.KAFKA_CA_CERT_PATH;
+
+    if (ca) {
+        return { ca: [ca.replace(/\\n/g, '\n')] };
+    }
+
+    if (caPath) {
+        return { ca: [readFileSync(caPath, 'utf-8')] };
+    }
+
+    return true;
+}
+
+export function getKafkaBrokers(): string[] {
+    const brokers = process.env.KAFKA_BROKERS;
+    const sasl = getKafkaSaslConfig();
+
+    if (!brokers && sasl) {
+        throw new Error('KAFKA_BROKERS must be set when Kafka SASL is configured');
+    }
+
+    return (brokers || 'localhost:29092')
+        .split(',')
+        .map((broker) => broker.trim())
+        .filter(Boolean);
 }
 
 export class KafkaProducerImpl implements IEventProducer {
@@ -14,6 +66,8 @@ export class KafkaProducerImpl implements IEventProducer {
         const kafkaConfig: KafkaConfig = {
             clientId,
             brokers,
+            ssl: getKafkaSslConfig(),
+            sasl: getKafkaSaslConfig(),
             retry: { retries: 5 }
         };
         this.kafka = new Kafka(kafkaConfig);
