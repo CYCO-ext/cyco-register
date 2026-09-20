@@ -4,6 +4,8 @@ import { TVehicleDtoOutput } from "../../dto/output/vehicle.dto.output";
 export const mapVehiclesOutput = (vehicle: Vehicle): TVehicleDtoOutput => {
   return {
     id: vehicle.getId(),
+    modelId: vehicle.getModelId(),
+    colorId: vehicle.getColorId(),
     brand: vehicle.getBrand(),
     color: vehicle.getColor(),
     model: vehicle.getModel(),

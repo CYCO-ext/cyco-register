@@ -46,10 +46,14 @@ export class VehicleRepositoryImpl implements IVehicleRepository {
   }
 
   private mapOutputWithMultipleColors(result: TVehiclePrismaResult): Vehicle {
+    const color = result.tbl_vehicle_color[0].color;
+    const model = result.tbl_vehicle_vehicle_model[0].model;
     const vehicle = Vehicle.create({
       brand: result.brand.brand,
-      color: result.tbl_vehicle_color[0].color.color,
-      model: result.tbl_vehicle_vehicle_model[0].model.model,
+      color: color.color,
+      colorId: color.id,
+      model: model.model,
+      modelId: model.id,
       plate: result.tbl_vehicle_deliveryman[0]?.plate ?? "000000",
       type: result.type.type,
       year: result.year
@@ -59,10 +63,14 @@ export class VehicleRepositoryImpl implements IVehicleRepository {
   }
 
   private mapOutput(result: TVehiclePrismaResult, modelId: string, colorId: string): Vehicle {
+    const color = result.tbl_vehicle_color.filter(it => it.color.id === colorId)[0].color;
+    const model = result.tbl_vehicle_vehicle_model.filter(it => it.model.id === modelId)[0].model;
     const vehicle = Vehicle.create({
       brand: result.brand.brand,
-      color: result.tbl_vehicle_color.filter(it => it.color.id === colorId)[0].color.color,
-      model: result.tbl_vehicle_vehicle_model.filter(it => it.model.id === modelId)[0].model.model,
+      color: color.color,
+      colorId: color.id,
+      model: model.model,
+      modelId: model.id,
       plate: result.tbl_vehicle_deliveryman[0]?.plate ?? "000000",
       type: result.type.type,
       year: result.year

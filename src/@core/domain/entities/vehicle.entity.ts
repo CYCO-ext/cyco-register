@@ -2,6 +2,8 @@ import { Guard } from "../shared/guard/guard";
 import { Result } from "../shared/result/result";
 
 export type TVehicleProps = {
+  modelId?: string;
+  colorId?: string;
   type: string; //create type
   brand: string;
   model: string;
@@ -51,12 +53,20 @@ export class Vehicle {
     return this.props.model
   }
 
+  public getModelId() {
+    return this.props.modelId
+  }
+
   public getYear() {
     return this.props.year
   }
 
   public getColor() {
     return this.props.color
+  }
+
+  public getColorId() {
+    return this.props.colorId
   }
 
   public getPlate() {
@@ -79,12 +89,20 @@ export class Vehicle {
     this.props.model = model
   }
 
+  public setModelId(modelId: string) {
+    this.props.modelId = modelId
+  }
+
   public setYear(year: number) {
     this.props.year = year
   }
 
   public setColor(color: string) {
     this.props.color = color
+  }
+
+  public setColorId(colorId: string) {
+    this.props.colorId = colorId
   }
 
   public setPlate(plate: string) {
