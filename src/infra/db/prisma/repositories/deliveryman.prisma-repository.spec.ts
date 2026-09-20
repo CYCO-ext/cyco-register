@@ -125,7 +125,9 @@ describe('DeliverymanRepositoryImpl', () => {
     expect(prisma.tbl_deliveryman.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
-          waste_collector_id: 'collector-id',
+          waste_collector: {
+            connect: { id: 'collector-id' },
+          },
         }),
       }),
     );

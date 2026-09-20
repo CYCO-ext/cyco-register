@@ -53,7 +53,9 @@ export class DeliverymanRepositoryImpl implements IDeliverymanRepository {
       data: {
         birthDate: deliveryman.getBirthDate(),
         licenseNumber: deliveryman.getLicenseNumber(),
-        waste_collector_id: deliveryman.getWasteCollectorId(),
+        waste_collector: {
+          connect: { id: deliveryman.getWasteCollectorId() },
+        },
         user: {
           create: {
             email: deliveryman.getUser().getEmail(),
