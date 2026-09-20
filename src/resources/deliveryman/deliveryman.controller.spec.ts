@@ -5,12 +5,14 @@ import { CreateDeliverymanUsecase } from '../../@core/application/usecases/deliv
 import { FindDeliverymanByIdUsecase } from '../../@core/application/usecases/deliveryman/find-deliveryman-by-id.usecase';
 import { IDeliverymanRepository } from '../../@core/domain/repositories/deliveryman.repository';
 import { IVehicleRepository } from '../../@core/domain/repositories/vehicle.repository';
+import { IWasteCollectorRepository } from '../../@core/domain/repositories/waste-collector.repository';
 import { IPasswordCryptography } from '../../@core/domain/services/password-cryptography.service';
 import { IValidator } from '../../@core/domain/services/validator.service';
 import { BcryptAdapter } from '../../infra/cryptography/password/bcrypt.adapter';
 import { prismaClient } from '../../infra/db/prisma';
 import { DeliverymanRepositoryImpl } from '../../infra/db/prisma/repositories/deliveryman.prisma-repository';
 import { VehicleRepositoryImpl } from '../../infra/db/prisma/repositories/vehicle.prisma-repository';
+import { WasteCollectorRepositoryImpl } from '../../infra/db/prisma/repositories/waste-collector.prisma-repository';
 import { deliverymanSchema } from '../../infra/validation/yup/schemas/deliveryman.schema';
 import { YupAdapter } from '../../infra/validation/yup/yup.adapter';
 
@@ -24,22 +26,25 @@ describe('DeliverymanController', () => {
         { provide: YupAdapter, useClass: YupAdapter },
         { provide: DeliverymanRepositoryImpl, useFactory: () => new DeliverymanRepositoryImpl(prismaClient) },
         { provide: VehicleRepositoryImpl, useFactory: () => new VehicleRepositoryImpl(prismaClient) },
+        { provide: WasteCollectorRepositoryImpl, useFactory: () => new WasteCollectorRepositoryImpl(prismaClient) },
         { provide: BcryptAdapter, useFactory: () => new BcryptAdapter(8) },
         {
           provide: CreateDeliverymanUsecase,
           useFactory: (
             repository: IDeliverymanRepository,
             vehicleRepository: IVehicleRepository,
+            wasteCollectorRepository: IWasteCollectorRepository,
             passwordCryptography: IPasswordCryptography,
             validator: IValidator<TDeliverymanInputDTO>
           ) => new CreateDeliverymanUsecase(
             repository,
             vehicleRepository,
+            wasteCollectorRepository,
             passwordCryptography,
             validator,
             deliverymanSchema
           ),
-          inject: [DeliverymanRepositoryImpl, VehicleRepositoryImpl, BcryptAdapter, YupAdapter]
+          inject: [DeliverymanRepositoryImpl, VehicleRepositoryImpl, WasteCollectorRepositoryImpl, BcryptAdapter, YupAdapter]
         },
         {
           provide: FindDeliverymanByIdUsecase,

@@ -13,8 +13,8 @@ export const deliverymanSchema: yup.SchemaOf<TDeliverymanInputDTO> = yup
     phone: yup
       .object()
       .shape({
-        ddd: yup.string().required(),
-        ddi: yup.string().required(),
+        ddd: yup.number().required(),
+        ddi: yup.number().required(),
         number: yup.string().required(),
       })
       .required(),
