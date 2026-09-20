@@ -100,6 +100,7 @@ describe('DeliverymanRepositoryImpl', () => {
     tbl_deliveryman: {
       create: jest.fn(),
       findUnique: jest.fn(),
+      findMany: jest.fn(),
     },
   };
 
@@ -115,6 +116,7 @@ describe('DeliverymanRepositoryImpl', () => {
     });
     prisma.tbl_deliveryman.create.mockResolvedValue(prismaDeliverymanResult);
     prisma.tbl_deliveryman.findUnique.mockResolvedValue(prismaDeliverymanResult);
+    prisma.tbl_deliveryman.findMany.mockResolvedValue([prismaDeliverymanResult]);
   });
 
   it('writes the owner collector id when creating a deliveryman', async () => {
@@ -145,5 +147,19 @@ describe('DeliverymanRepositoryImpl', () => {
       }),
     );
     expect(result.getWasteCollectorId()).toBe('collector-id');
+  });
+
+  it('lists deliverymen by owner collector id', async () => {
+    const repository = new DeliverymanRepositoryImpl(prisma as any);
+
+    const result = await repository.findByWasteCollectorId('collector-id');
+
+    expect(prisma.tbl_deliveryman.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { waste_collector_id: 'collector-id' },
+      }),
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0].getWasteCollectorId()).toBe('collector-id');
   });
 });

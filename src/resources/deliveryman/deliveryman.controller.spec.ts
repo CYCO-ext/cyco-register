@@ -3,6 +3,7 @@ import { DeliverymanController } from './deliveryman.controller';
 import { TDeliverymanInputDTO } from '../../@core/application/dto/input/deliveryman.dto.input';
 import { CreateDeliverymanUsecase } from '../../@core/application/usecases/deliveryman/create-deliveryman.usecase';
 import { FindDeliverymanByIdUsecase } from '../../@core/application/usecases/deliveryman/find-deliveryman-by-id.usecase';
+import { ListDeliverymenByCollectorUsecase } from '../../@core/application/usecases/deliveryman/list-deliverymen-by-collector.usecase';
 import { IDeliverymanRepository } from '../../@core/domain/repositories/deliveryman.repository';
 import { IVehicleRepository } from '../../@core/domain/repositories/vehicle.repository';
 import { IWasteCollectorRepository } from '../../@core/domain/repositories/waste-collector.repository';
@@ -51,6 +52,15 @@ describe('DeliverymanController', () => {
           useFactory: (
             repository: IDeliverymanRepository
           ) => new FindDeliverymanByIdUsecase(
+            repository
+          ),
+          inject: [DeliverymanRepositoryImpl]
+        },
+        {
+          provide: ListDeliverymenByCollectorUsecase,
+          useFactory: (
+            repository: IDeliverymanRepository
+          ) => new ListDeliverymenByCollectorUsecase(
             repository
           ),
           inject: [DeliverymanRepositoryImpl]

@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseFilters } from '@
 import { CreateDeliverymanUsecase } from '../../@core/application/usecases/deliveryman/create-deliveryman.usecase';
 import { TDeliverymanInputDTO } from '../../@core/application/dto/input/deliveryman.dto.input';
 import { FindDeliverymanByIdUsecase } from '../../@core/application/usecases/deliveryman/find-deliveryman-by-id.usecase';
+import { ListDeliverymenByCollectorUsecase } from '../../@core/application/usecases/deliveryman/list-deliverymen-by-collector.usecase';
 import { PrismaClientExceptionFilter } from '../../infra/error/prisma-client.exception-filter';
 
 @Controller('deliveryman')
@@ -9,7 +10,8 @@ import { PrismaClientExceptionFilter } from '../../infra/error/prisma-client.exc
 export class DeliverymanController {
   constructor(
     private readonly createUsecase: CreateDeliverymanUsecase,
-    private readonly findByIdUsecase: FindDeliverymanByIdUsecase
+    private readonly findByIdUsecase: FindDeliverymanByIdUsecase,
+    private readonly listByCollectorUsecase: ListDeliverymenByCollectorUsecase
   ) { }
 
   @Post()
@@ -21,6 +23,11 @@ export class DeliverymanController {
   // findAll() {
   //   return this.deliverymanService.findAll();
   // }
+
+  @Get('collector/:collectorId')
+  findByCollector(@Param('collectorId') collectorId: string) {
+    return this.listByCollectorUsecase.execute(collectorId);
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {

@@ -10,24 +10,26 @@ import { TDeliverymanPrismaResult } from './types/deliveryman-prisma-types';
 export class DeliverymanRepositoryImpl implements IDeliverymanRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async findById(id: string): Promise<Deliveryman> {
-    const result = await this.prisma.tbl_deliveryman.findUnique({
-      where: { id },
+  private readonly deliverymanInclude = {
+    user: true,
+    tbl_vehicle_deliveryman: {
       include: {
-        user: true,
-        tbl_vehicle_deliveryman: {
+        vehicle: {
           include: {
-            vehicle: {
-              include: {
-                brand: true,
-                tbl_vehicle_color: { select: { color: true } },
-                tbl_vehicle_vehicle_model: { select: { model: true } },
-                type: true,
-              },
-            },
+            brand: true,
+            tbl_vehicle_color: { select: { color: true } },
+            tbl_vehicle_vehicle_model: { select: { model: true } },
+            type: true,
           },
         },
       },
+    },
+  };
+
+  async findById(id: string): Promise<Deliveryman> {
+    const result = await this.prisma.tbl_deliveryman.findUnique({
+      where: { id },
+      include: this.deliverymanInclude,
     });
 
     return result
@@ -37,6 +39,21 @@ export class DeliverymanRepositoryImpl implements IDeliverymanRepository {
           result.tbl_vehicle_deliveryman[0].model_id,
         )
       : null;
+  }
+
+  async findByWasteCollectorId(wasteCollectorId: string): Promise<Deliveryman[]> {
+    const results = await this.prisma.tbl_deliveryman.findMany({
+      where: { waste_collector_id: wasteCollectorId },
+      include: this.deliverymanInclude,
+    });
+
+    return results.map((result) =>
+      this.mapOutput(
+        result as unknown as TDeliverymanPrismaResult,
+        result.tbl_vehicle_deliveryman[0].color_id,
+        result.tbl_vehicle_deliveryman[0].model_id,
+      ),
+    );
   }
 
   async create(deliveryman: Deliveryman): Promise<Deliveryman> {
@@ -73,21 +90,7 @@ export class DeliverymanRepositoryImpl implements IDeliverymanRepository {
           },
         },
       } as any,
-      include: {
-        user: true,
-        tbl_vehicle_deliveryman: {
-          include: {
-            vehicle: {
-              include: {
-                brand: true,
-                tbl_vehicle_color: { select: { color: true } },
-                tbl_vehicle_vehicle_model: { select: { model: true } },
-                type: true,
-              },
-            },
-          },
-        },
-      },
+      include: this.deliverymanInclude,
     });
 
     return this.mapOutput(
