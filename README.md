@@ -2,15 +2,18 @@
 
 Para rodar essa aplicação você precisa ter [Git](https://git-scm.com) e [Node.js](https://nodejs.org/en/download/) instalados no seu computador. Após instalar, siga os comandos no terminal.
 
-## Deploy
+## Deploy no Cloud Run
 
-O deploy no Heroku é executado pelo GitHub Actions em pushes para `main` ou `master`, e também pode ser iniciado manualmente pela aba Actions.
+O deploy no Google Cloud Run é executado pelo GitHub Actions em pushes para `main`, e também pode ser iniciado manualmente pela aba Actions.
 
 Configure estes secrets no repositório do GitHub:
 
 ```text
-HEROKU_API_KEY=token da sua conta Heroku
-HEROKU_APP_NAME=nome do app no Heroku
+GCP_SA_KEY=json da service account do Google Cloud
+GCP_PROJECT_ID=id do projeto no Google Cloud
+GCP_REGION=regiao do Cloud Run e Artifact Registry
+GCP_ARTIFACT_REPOSITORY=nome do repositorio Docker no Artifact Registry
+CLOUD_RUN_SERVICE=nome do servico no Cloud Run
 ```
 
 ```bash
