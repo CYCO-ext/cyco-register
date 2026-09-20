@@ -2,6 +2,17 @@
 
 Para rodar essa aplicação você precisa ter [Git](https://git-scm.com) e [Node.js](https://nodejs.org/en/download/) instalados no seu computador. Após instalar, siga os comandos no terminal.
 
+## Deploy
+
+O deploy no Heroku é executado pelo GitHub Actions em pushes para `main` ou `master`, e também pode ser iniciado manualmente pela aba Actions.
+
+Configure estes secrets no repositório do GitHub:
+
+```text
+HEROKU_API_KEY=token da sua conta Heroku
+HEROKU_APP_NAME=nome do app no Heroku
+```
+
 ```bash
 # Clona o repositório
 $ git clone https://github.com/lidiagaldino/cyco-backend

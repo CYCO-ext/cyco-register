@@ -3,6 +3,7 @@ export type TDeliverymanPrismaResult = {
   licenseNumber: string;
   birthDate: Date;
   user_id: string;
+  waste_collector_id: string;
   user: {
     id: string;
     email: string;
@@ -43,21 +44,3 @@ export type TDeliverymanPrismaResult = {
     };
   }[];
 };
-// {
-//   id: string;
-//   licenseNumber: string;
-//   birthDate: Date;
-//   user_id: string;
-// } & {
-//   tbl_vehicle_deliveryman: {
-//     vehicle: TVehiclePrismaResult;
-//     plate: string
-//   };
-//   user: {
-//     id: string;
-//     name: string;
-//     email: string;
-//     password: string;
-//     phone: string;
-//   };
-// }

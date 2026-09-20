@@ -9,10 +9,11 @@ export type TDeliverymanInputDTO = {
   };
   birthDate: Date;
   licenseNumber: string;
+  wasteCollectorId: string;
   vehicle: {
     id: string;
     colorId: string;
     modelId: string;
     plate: string;
-  }
-}
+  };
+};

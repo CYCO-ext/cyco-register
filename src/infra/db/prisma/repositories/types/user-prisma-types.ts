@@ -6,8 +6,11 @@ export type TUserPrismaResult = {
   name: string;
   tbl_generator: {
     id: string;
-  }[],
+  }[];
   tbl_waste_collector: {
     id: string;
-  }[]
-}
+  }[];
+  tbl_deliveryman: {
+    id: string;
+  }[];
+};

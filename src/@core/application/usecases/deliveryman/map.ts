@@ -1,9 +1,12 @@
-import { Deliveryman } from "../../../domain/entities/deliveryman.entity";
-import { TDeliverymanOutputDTO } from "../../dto/output/deliveryman.dto.output";
+import { Deliveryman } from '../../../domain/entities/deliveryman.entity';
+import { TDeliverymanOutputDTO } from '../../dto/output/deliveryman.dto.output';
 
-export const mapDeliverymanOutput = (deliveryman: Deliveryman): TDeliverymanOutputDTO => {
+export const mapDeliverymanOutput = (
+  deliveryman: Deliveryman,
+): TDeliverymanOutputDTO => {
   return {
     id: deliveryman.getId(),
+    wasteCollectorId: deliveryman.getWasteCollectorId(),
     birthDate: deliveryman.getBirthDate(),
     licenseNumber: deliveryman.getLicenseNumber(),
     email: deliveryman.getUser().getEmail(),
@@ -11,7 +14,7 @@ export const mapDeliverymanOutput = (deliveryman: Deliveryman): TDeliverymanOutp
     phone: {
       ddd: deliveryman.getUser().getPhone().getDdd(),
       ddi: deliveryman.getUser().getPhone().getDdi(),
-      number: deliveryman.getUser().getPhone().getNumber()
+      number: deliveryman.getUser().getPhone().getNumber(),
     },
     vehicle: {
       id: deliveryman.getVehicle().getId(),
@@ -20,7 +23,7 @@ export const mapDeliverymanOutput = (deliveryman: Deliveryman): TDeliverymanOutp
       model: deliveryman.getVehicle().getModel(),
       plate: deliveryman.getVehicle().getPlate(),
       type: deliveryman.getVehicle().getType(),
-      year: deliveryman.getVehicle().getYear()
-    }
-  }
-}
+      year: deliveryman.getVehicle().getYear(),
+    },
+  };
+};

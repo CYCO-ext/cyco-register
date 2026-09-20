@@ -1,40 +1,60 @@
-import { NotFoundException, UnprocessableEntityException } from "@nestjs/common";
-import { IPasswordCryptography } from "../../../domain/services/password-cryptography.service";
-import { IValidator } from "../../../domain/services/validator.service";
-import { Password } from "../../../domain/value-objects/password.value-object";
-import { IDeliverymanRepository } from "../../../domain/repositories/deliveryman.repository";
-import { TDeliverymanInputDTO } from "../../dto/input/deliveryman.dto.input";
-import { TDeliverymanOutputDTO } from "../../dto/output/deliveryman.dto.output";
-import { deliverymanFactory } from "../../factories/deliveryman.factory";
-import { mapDeliverymanOutput } from "./map";
-import { IVehicleRepository } from "../../../domain/repositories/vehicle.repository";
+import {
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
+import { IDeliverymanRepository } from '../../../domain/repositories/deliveryman.repository';
+import { IVehicleRepository } from '../../../domain/repositories/vehicle.repository';
+import { IWasteCollectorRepository } from '../../../domain/repositories/waste-collector.repository';
+import { IPasswordCryptography } from '../../../domain/services/password-cryptography.service';
+import { IValidator } from '../../../domain/services/validator.service';
+import { Password } from '../../../domain/value-objects/password.value-object';
+import { TDeliverymanInputDTO } from '../../dto/input/deliveryman.dto.input';
+import { TDeliverymanOutputDTO } from '../../dto/output/deliveryman.dto.output';
+import { deliverymanFactory } from '../../factories/deliveryman.factory';
+import { mapDeliverymanOutput } from './map';
 
 export class CreateDeliverymanUsecase {
   constructor(
     private readonly deliverymanRepository: IDeliverymanRepository,
     private readonly vehicleRepository: IVehicleRepository,
+    private readonly wasteCollectorRepository: IWasteCollectorRepository,
     private readonly passwordCryptography: IPasswordCryptography,
     private readonly validator: IValidator<TDeliverymanInputDTO>,
-    private readonly schema: object
-  ) { }
+    private readonly schema: object,
+  ) {}
 
   async execute(input: TDeliverymanInputDTO): Promise<TDeliverymanOutputDTO> {
-    const { isValid, errorsResult } = this.validator.validate(this.schema, input)
-    if (!isValid) throw new UnprocessableEntityException(errorsResult);
+    const validation = this.validator.validate(this.schema, input);
+    if (!validation.isValid) {
+      throw new UnprocessableEntityException(validation.errorsResult);
+    }
 
-    const vehicleExists = await this.vehicleRepository.findByIdModelAndColor(input.vehicle.id, input.vehicle.modelId, input.vehicle.colorId)
-    if (!vehicleExists) throw new NotFoundException("VEHICLE_NOT_FOUND")
-    vehicleExists.setPlate(input.vehicle.plate)
+    const wasteCollector = await this.wasteCollectorRepository.findById(
+      input.wasteCollectorId,
+    );
+    if (!wasteCollector) {
+      throw new NotFoundException('WASTE_COLLECTOR_NOT_FOUND');
+    }
 
-    const deliveryman = deliverymanFactory(input, vehicleExists)
-    if (!deliveryman.isRight()) throw new UnprocessableEntityException(deliveryman.value.getErrorValue())
+    const vehicle = await this.vehicleRepository.findByIdModelAndColor(
+      input.vehicle.id,
+      input.vehicle.modelId,
+      input.vehicle.colorId,
+    );
+    if (!vehicle) throw new NotFoundException('VEHICLE_NOT_FOUND');
+    vehicle.setPlate(input.vehicle.plate);
 
-    const hashedPassword = await this.passwordCryptography.hash(input.password)
-    const password = Password.create({ password: hashedPassword }).getValue()
-    const deliverymanValue = deliveryman.value.getValue()
-    deliverymanValue.getUser().setPassword(password)
+    const deliveryman = deliverymanFactory(input, vehicle);
+    if (!deliveryman.isRight()) {
+      throw new UnprocessableEntityException(deliveryman.value.getErrorValue());
+    }
 
-    const result = await this.deliverymanRepository.create(deliverymanValue)
+    const hashedPassword = await this.passwordCryptography.hash(input.password);
+    const password = Password.create({ password: hashedPassword }).getValue();
+    const deliverymanValue = deliveryman.value.getValue();
+    deliverymanValue.getUser().setPassword(password);
+
+    const result = await this.deliverymanRepository.create(deliverymanValue);
     return mapDeliverymanOutput(result);
   }
 }

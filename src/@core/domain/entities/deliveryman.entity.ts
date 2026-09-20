@@ -6,6 +6,7 @@ import { Vehicle } from "./vehicle.entity";
 export type TDeliverymanProps = {
   licenseNumber: string;
   birthDate: Date;
+  wasteCollectorId: string;
   vehicle: Vehicle;
   user: User;
 }
@@ -22,6 +23,7 @@ export class Deliveryman {
     const guardResults = Guard.combine([
       Guard.againstNullOrUndefined(deliveryman.licenseNumber, 'licenseNumber'),
       Guard.againstNullOrUndefined(deliveryman.birthDate, 'birthDate'),
+      Guard.againstNullOrUndefined(deliveryman.wasteCollectorId, 'wasteCollectorId'),
       Guard.againstNullOrUndefined(deliveryman.vehicle, 'vehicle'),
       Guard.againstNullOrUndefined(deliveryman.user, 'user'),
     ])
@@ -45,6 +47,10 @@ export class Deliveryman {
     return this.props.birthDate
   }
 
+  public getWasteCollectorId() {
+    return this.props.wasteCollectorId
+  }
+
   public getVehicle() {
     return this.props.vehicle
   }
@@ -63,6 +69,10 @@ export class Deliveryman {
 
   public setBirthDate(birthDate: Date) {
     this.props.birthDate = birthDate
+  }
+
+  public setWasteCollectorId(wasteCollectorId: string) {
+    this.props.wasteCollectorId = wasteCollectorId
   }
 
   public setVehicle(vehicle: Vehicle) {

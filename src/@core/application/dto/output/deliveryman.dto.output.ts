@@ -1,5 +1,6 @@
 export type TDeliverymanOutputDTO = {
   id: string;
+  wasteCollectorId: string;
   email: string;
   name: string;
   phone: {
@@ -10,12 +11,12 @@ export type TDeliverymanOutputDTO = {
   birthDate: Date;
   licenseNumber: string;
   vehicle: {
-    id: string
+    id: string;
     type: string;
     brand: string;
     model: string;
     year: number;
     color: string;
     plate: string;
-  }
-}
+  };
+};

@@ -37,12 +37,14 @@ model tbl_generator {
 }
 
 model tbl_deliveryman {
-  id            String   @id @default(uuid())
-  licenseNumber String
-  birthDate     DateTime
-  user          tbl_user @relation(fields: [user_id], references: [id])
+  id                 String              @id @default(uuid())
+  licenseNumber      String
+  birthDate          DateTime
+  user               tbl_user            @relation(fields: [user_id], references: [id])
+  waste_collector    tbl_waste_collector @relation(fields: [waste_collector_id], references: [id])
 
   user_id                 String
+  waste_collector_id      String
   tbl_vehicle_deliveryman tbl_vehicle_deliveryman[]
 
   tbl_collection tbl_collection[]
@@ -139,6 +141,7 @@ model tbl_waste_collector {
 
   user_id                       String
   tbl_enterprise                tbl_enterprise[]
+  tbl_deliveryman               tbl_deliveryman[]
   tbl_materials_waste_collector tbl_materials_waste_collector[]
 
   tbl_waste_collector_address tbl_waste_collector_address[]
