@@ -67,4 +67,34 @@ describe('SessionController', () => {
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
+
+  it('resolves the profile from the verified token and returns database identity only', async () => {
+    const jwt = { verify: jest.fn().mockReturnValue({ id: 'profile-1', role: 'GENERATOR' }) };
+    const users = {
+      resolveAuthenticatedIdentity: jest.fn().mockResolvedValue({
+        userId: 'user-1',
+        role: 'GENERATOR',
+        generatorId: 'profile-1',
+      }),
+    };
+    const authenticatedController = new SessionController({} as any, jwt as any, users as any);
+
+    await expect(authenticatedController.me('Bearer signed-token')).resolves.toEqual({
+      userId: 'user-1',
+      role: 'GENERATOR',
+      generatorId: 'profile-1',
+    });
+    expect(users.resolveAuthenticatedIdentity).toHaveBeenCalledWith('profile-1');
+  });
+
+  it('rejects an invalid or expired bearer token with 401', async () => {
+    const jwt = { verify: jest.fn(() => { throw new Error('expired'); }) };
+    const users = { resolveAuthenticatedIdentity: jest.fn() };
+    const authenticatedController = new SessionController({} as any, jwt as any, users as any);
+
+    await expect(authenticatedController.me('Bearer expired-token')).rejects.toMatchObject({
+      status: 401,
+    });
+    expect(users.resolveAuthenticatedIdentity).not.toHaveBeenCalled();
+  });
 });

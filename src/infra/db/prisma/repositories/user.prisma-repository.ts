@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { User } from '../../../../@core/domain/entities/user.entity';
 import {
   IUserRepository,
+  AuthenticatedIdentity,
   UserRole,
 } from '../../../../@core/domain/repositories/user-repository.repository';
 import { Password } from '../../../../@core/domain/value-objects/password.value-object';
@@ -42,6 +43,35 @@ export class UserRepositoryImpl implements IUserRepository {
     if (result.tbl_generator.length > 0) return 'GENERATOR';
     if (result.tbl_waste_collector.length > 0) return 'WASTE_COLLECTOR';
     if (result.tbl_deliveryman.length > 0) return 'DELIVERYMAN';
+    return null;
+  }
+
+  async resolveAuthenticatedIdentity(profileId: string): Promise<AuthenticatedIdentity | null> {
+    const generator = await this.prisma.tbl_generator.findUnique({
+      where: { id: profileId },
+      select: { id: true, user_id: true },
+    });
+    if (generator) return { userId: generator.user_id, role: 'GENERATOR', generatorId: generator.id };
+
+    const collector = await this.prisma.tbl_waste_collector.findUnique({
+      where: { id: profileId },
+      select: { id: true, user_id: true },
+    });
+    if (collector) return { userId: collector.user_id, role: 'WASTE_COLLECTOR', collectorId: collector.id };
+
+    const deliveryman = await this.prisma.tbl_deliveryman.findUnique({
+      where: { id: profileId },
+      select: { id: true, user_id: true, waste_collector_id: true },
+    });
+    if (deliveryman) {
+      return {
+        userId: deliveryman.user_id,
+        role: 'DELIVERYMAN',
+        deliverymanId: deliveryman.id,
+        ownerCollectorId: deliveryman.waste_collector_id,
+      };
+    }
+
     return null;
   }
 
