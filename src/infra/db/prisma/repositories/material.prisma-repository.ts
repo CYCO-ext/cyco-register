@@ -36,7 +36,7 @@ export class MaterialRepositoryImpl implements IMaterialRepository {
     });
   }
 
-  private mapOutput(material: { name: string }): Material {
-    return Material.create({ name: material.name }).getValue();
+  private mapOutput(material: { id: string; name: string }): Material {
+    return Material.create({ id: material.id, name: material.name }).getValue();
   }
 }

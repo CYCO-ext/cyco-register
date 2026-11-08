@@ -2,6 +2,7 @@ import { Guard } from "../shared/guard/guard";
 import { Result } from "../shared/result/result";
 
 export type TMaterialProps = {
+  id?: string;
   name: string;
 }
 
@@ -26,5 +27,9 @@ export class Material {
 
   public getName(): string {
     return this.props.name;
+  }
+
+  public getId(): string | undefined {
+    return this.props.id;
   }
 }
