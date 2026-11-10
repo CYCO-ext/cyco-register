@@ -1,8 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { FindAllVehiclesUsecase } from '../../@core/application/usecases/vehicle/find-all-vehicles.usecase';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 
 @Controller('vehicle')
+@ApiTags('Veículos')
 export class VehicleController {
   constructor(private readonly findAllUsecase: FindAllVehiclesUsecase) { }
 
@@ -12,6 +14,7 @@ export class VehicleController {
   // }
 
   @Get()
+  @ApiOperation({ summary: 'Lista modelos e veículos disponíveis' })
   findAll() {
     return this.findAllUsecase.execute();
   }
