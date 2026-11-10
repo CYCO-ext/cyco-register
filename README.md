@@ -1,6 +1,6 @@
 ## Swagger / OpenAPI
 
-Com a API em execução na porta `3000` (ou na porta definida por `PORT`), acesse a interface Swagger em `http://localhost:3000/docs` e o documento OpenAPI em `http://localhost:3000/openapi.json`. A documentação cobre autenticação, geradores, coletores, entregadores, veículos e materiais.
+Com a API em execução na porta `3000` (ou na porta definida por `PORT`), acesse a interface Swagger em `http://localhost:3000/docs` e o documento OpenAPI em `http://localhost:3000/openapi.json`. O arquivo OpenAPI estático para importar em ferramentas Swagger fica em [`openapi.yml`](openapi.yml). A documentação cobre autenticação, geradores, coletores, entregadores, veículos e materiais.
 
 ## Como Usar
 

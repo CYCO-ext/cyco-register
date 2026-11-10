@@ -1,0 +1,388 @@
+openapi: 3.0.3
+info:
+  title: Cyco Register API
+  version: 1.0.0
+  description: Cadastro e autenticação de geradores, coletores, entregadores, veículos e materiais.
+servers:
+  - url: http://localhost:3000
+tags:
+  - name: Sessão
+  - name: Geradores
+  - name: Coletores
+  - name: Entregadores
+  - name: Veículos
+  - name: Materiais
+paths:
+  /session:
+    post:
+      tags: [Sessão]
+      summary: Autentica usuário e cria sessão
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignInRequest'
+      responses:
+        '200':
+          description: Sessão autenticada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+        '401':
+          description: Credenciais inválidas
+  /session/me:
+    get:
+      tags: [Sessão]
+      summary: Retorna a identidade do usuário autenticado
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Identidade do usuário
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Token ausente ou inválido
+  /generator:
+    post:
+      tags: [Geradores]
+      summary: Cadastra uma empresa geradora
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeneratorInput'
+      responses:
+        '201':
+          description: Gerador cadastrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Generator'
+        '400':
+          description: Dados inválidos
+  /generator/{id}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      tags: [Geradores]
+      summary: Busca um gerador por identificador
+      responses:
+        '200':
+          description: Gerador encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Generator'
+        '404':
+          description: Gerador não encontrado
+    put:
+      tags: [Geradores]
+      summary: Atualiza os dados do gerador
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeneratorInput'
+      responses:
+        '200':
+          description: Gerador atualizado
+        '400':
+          description: Dados inválidos
+  /generator/{id}/address:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    post:
+      tags: [Geradores]
+      summary: Adiciona um endereço ao gerador
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressInput'
+      responses:
+        '201':
+          description: Endereço adicionado
+        '400':
+          description: Dados inválidos
+  /waste-collectors:
+    get:
+      tags: [Coletores]
+      summary: Lista coletores cadastrados
+      responses:
+        '200':
+          description: Lista de coletores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WasteCollector'
+    post:
+      tags: [Coletores]
+      summary: Cadastra uma empresa coletora ou coletor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WasteCollectorInput'
+      responses:
+        '201':
+          description: Coletor cadastrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WasteCollector'
+        '400':
+          description: Dados inválidos
+  /waste-collectors/{id}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      tags: [Coletores]
+      summary: Busca um coletor por identificador
+      responses:
+        '200':
+          description: Coletor encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WasteCollector'
+        '404':
+          description: Coletor não encontrado
+    put:
+      tags: [Coletores]
+      summary: Atualiza os dados do coletor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WasteCollectorInput'
+      responses:
+        '200':
+          description: Coletor atualizado
+        '400':
+          description: Dados inválidos
+  /deliveryman:
+    post:
+      tags: [Entregadores]
+      summary: Cadastra um entregador vinculado a um coletor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeliverymanInput'
+      responses:
+        '201':
+          description: Entregador cadastrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deliveryman'
+        '400':
+          description: Dados inválidos
+  /deliveryman/collector/{collectorId}:
+    get:
+      tags: [Entregadores]
+      summary: Lista entregadores de um coletor
+      parameters:
+        - name: collectorId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de entregadores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Deliveryman'
+  /deliveryman/{id}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      tags: [Entregadores]
+      summary: Busca um entregador por identificador
+      responses:
+        '200':
+          description: Entregador encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deliveryman'
+        '404':
+          description: Entregador não encontrado
+  /vehicle:
+    get:
+      tags: [Veículos]
+      summary: Lista modelos e veículos disponíveis
+      responses:
+        '200':
+          description: Lista de veículos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Vehicle'
+  /materials:
+    get:
+      tags: [Materiais]
+      summary: Lista materiais recicláveis disponíveis
+      responses:
+        '200':
+          description: Lista de materiais
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Material'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  schemas:
+    SignInRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, format: password }
+    Session:
+      type: object
+      properties:
+        user:
+          type: object
+          properties:
+            id: { type: string }
+            name: { type: string }
+            email: { type: string, format: email }
+        role: { type: string }
+        token: { type: string }
+    Phone:
+      type: object
+      required: [ddd, ddi, number]
+      properties:
+        ddd: { type: integer }
+        ddi: { type: integer }
+        number: { type: string }
+    AddressInput:
+      type: object
+      required: [zipCode, number]
+      properties:
+        zipCode: { type: string }
+        number: { type: string }
+        complement: { type: string }
+    Address:
+      allOf:
+        - $ref: '#/components/schemas/AddressInput'
+        - type: object
+          properties:
+            id: { type: string }
+    GeneratorInput:
+      type: object
+      required: [email, password, name, phone, address, birthDate, document]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, format: password }
+        name: { type: string }
+        phone: { $ref: '#/components/schemas/Phone' }
+        address: { $ref: '#/components/schemas/AddressInput' }
+        birthDate: { type: string, format: date-time }
+        document: { type: string }
+    Generator:
+      allOf:
+        - $ref: '#/components/schemas/GeneratorInput'
+        - type: object
+          properties:
+            id: { type: string }
+            address:
+              type: array
+              items: { $ref: '#/components/schemas/Address' }
+    WasteCollectorInput:
+      type: object
+      required: [email, password, name, phone, document, isEnterprise, materials]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, format: password }
+        name: { type: string }
+        phone: { $ref: '#/components/schemas/Phone' }
+        address: { $ref: '#/components/schemas/AddressInput' }
+        document: { type: string }
+        isEnterprise: { type: boolean }
+        materials:
+          type: array
+          items: { type: string }
+        enterprise:
+          type: object
+          properties:
+            companyName: { type: string }
+    WasteCollector:
+      allOf:
+        - $ref: '#/components/schemas/WasteCollectorInput'
+        - type: object
+          properties:
+            id: { type: string }
+    DeliverymanInput:
+      type: object
+      required: [email, password, name, phone, birthDate, licenseNumber, wasteCollectorId, vehicle]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, format: password }
+        name: { type: string }
+        phone: { $ref: '#/components/schemas/Phone' }
+        birthDate: { type: string, format: date-time }
+        licenseNumber: { type: string }
+        wasteCollectorId: { type: string }
+        vehicle:
+          type: object
+          required: [id, colorId, modelId, plate]
+          properties:
+            id: { type: string }
+            colorId: { type: string }
+            modelId: { type: string }
+            plate: { type: string }
+    Deliveryman:
+      allOf:
+        - $ref: '#/components/schemas/DeliverymanInput'
+        - type: object
+          properties:
+            id: { type: string }
+    Vehicle:
+      type: object
+      properties:
+        id: { type: string }
+        type: { type: string }
+        brand: { type: string }
+        model: { type: string }
+        year: { type: integer }
+        color: { type: string }
+        plate: { type: string }
+    Material:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
